@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justice for Shiva</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for elegant typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #1a202c; /* A deep, dark blue-gray */
+        }
+        h1 {
+            font-family: 'Lora', serif;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <!-- Main container for layout, without a visible background box -->
+    <div class="p-6 sm:p-8 max-w-sm w-full mx-4">
+        <h1 class="text-3xl sm:text-4xl font-semibold text-center text-white mb-2">
+            Justice for Shiva
+        </h1>
+        <p class="text-center text-gray-400 mb-6 text-sm">
+            Demanding accountability for the abuse he faced.
+        </p>
+        
+        <!-- Responsive container for the iframe -->
+        <div class="relative w-full rounded-lg overflow-hidden" style="padding-bottom: 178%;"> <!-- Aspect ratio based on iframe height/width -->
+            <iframe 
+                class="absolute top-0 left-0 w-full h-full"
+                src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Fsneha.dixit.351%2Fvideos%2F4190442081238650%2F&show_text=false&width=267&t=0" 
+                style="border:none;overflow:hidden" 
+                scrolling="no" 
+                frameborder="0" 
+                allowfullscreen="true" 
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+            </iframe>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -4,6 +4,17 @@
   <meta charset="utf-8" />
   <title>harper js</title>
 
+  <style>
+   .error-text {
+      color: #c94a4a; /* A shade of red */
+      font-weight: bold;
+    }
+   .error-suggestion {
+      color: #4CAF50; /* A shade of green */
+      font-style: italic;
+    }
+  </style>
+
   <script type="module">
     // Import the WorkerLinter class from the jsDelivr CDN.
     // This is a more robust alternative to unpkg for this use case.
@@ -37,14 +48,30 @@
         // Create a new list item for each error.
         let item = document.createElement('LI');
 
-        // Construct a more informative message, including the incorrect text.
-        const errorMessage = `"${incorrectText}" — ${lint.message()}`;
+        // Create a span for the incorrect text and style it.
+        const incorrectTextSpan = document.createElement('span');
+        incorrectTextSpan.className = 'error-text';
+        incorrectTextSpan.textContent = `"${incorrectText}"`;
+        item.appendChild(incorrectTextSpan);
+
+        // Create a text node for the separator and the main message.
+        const messageText = document.createTextNode(` — ${lint.message()}`);
+        item.appendChild(messageText);
+
+        // Check if there are suggestions and format them into a styled span.
+        if (lint.suggestion_count() > 0) {
+            // The `suggestions()` method returns an iterable of suggestion objects.
+            const suggestions = Array.from(lint.suggestions()).map(sug => {
+                // The suggestion object has a `get_replacement_text()` method.
+                return `‘${sug.get_replacement_text()}’`;
+            }).join(', ');
+            
+            const suggestionsSpan = document.createElement('span');
+            suggestionsSpan.className = 'error-suggestion';
+            suggestionsSpan.textContent = ` Suggestion(s): ${suggestions}`;
+            item.appendChild(suggestionsSpan);
+        }
         
-        // Create a text node with the new error message.
-        var text = document.createTextNode(errorMessage);
-        
-        // Append the message to the list item, and the item to the list.
-        item.appendChild(text);
         list.appendChild(item);
       }
     }

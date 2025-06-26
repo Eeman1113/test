@@ -17,17 +17,32 @@
 
   <script type="module">
     // Import the WorkerLinter class from the jsDelivr CDN.
-    // This is a more robust alternative to unpkg for this use case.
-    import { WorkerLinter } from 'https://cdn.jsdelivr.net/npm/harper.js@0.13.0/dist/harper.js';
+    // Using version 0.14.0 which includes improved logic for matching word pairs.
+    import { WorkerLinter } from 'https://cdn.jsdelivr.net/npm/harper.js@0.14.0/dist/harper.js';
 
-    // Instantiate the linter. WorkerLinter is essential for browser environments
-    // as it runs the analysis in a background thread, keeping the UI responsive.
-    let linter = new WorkerLinter();
+    // Define a configuration object to explicitly enable specific linters.
+    // This ensures that all desired checks (like sentence capitalization and spacing) are active.
+    const harperConfig = {
+      linters: {
+        'SentenceCapitalization': true,
+        'Spaces': true,
+        'SpellCheck': true,
+        'RepeatedWords': true,
+        'AnA': true,
+        'Matcher': true,
+      }
+    };
+
+    // Instantiate the linter with the custom configuration.
+    // WorkerLinter is essential for browser environments as it runs the analysis 
+    // in a background thread, keeping the UI responsive.
+    let linter = new WorkerLinter(harperConfig);
 
     // This async function is called whenever the user types in the textarea.
     async function onInput(e) {
-      // Retrieve the current text from the input element.
-      const textToLint = e.target.value;
+      // Retrieve the current text and replace non-breaking spaces (\u00A0) with regular spaces.
+      // This helps the linter correctly identify issues like double spacing.
+      const textToLint = e.target.value.replace(/\u00A0/g, ' ');
 
       // Asynchronously call the lint method and wait for the results.
       let lints = await linter.lint(textToLint);
@@ -89,7 +104,7 @@
   <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
 </head>
 <body>
-  <h1>Harper.js</h1>
+  <h1>harper js implimentation</h1>
 
   <textarea id="maininput" rows="10" style="width: 100%;">There are some cases where the the standard grammar
 checkers don't cut it. That s where Harper comes in handy.

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berserk: The Chronicle of the Struggler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background-color: #0D0D0D;
+            color: #FFFFFF;
+        }
+        h1, h2, h3 {
+            font-family: 'Teko', sans-serif;
+            letter-spacing: 0.05em;
+        }
+        .brand-text { color: #D92B04; }
+        .accent-bg { background-color: #D92B04; }
+        .card {
+            background-color: #1a1a1a;
+            border-left: 4px solid #D92B04;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            color: #D92B04;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="text-center py-16 px-4 bg-black/50">
+        <h1 class="text-6xl md:text-8xl font-bold uppercase brand-text">Berserk</h1>
+        <h2 class="text-4xl md:text-5xl font-bold uppercase text-white">The Chronicle of the Struggler</h2>
+        <p class="max-w-3xl mx-auto mt-4 text-lg text-gray-300">An interactive journey through the epic dark fantasy, detailing the inescapable struggle against causality, the depths of human trauma, and the relentless will to survive against all odds.</p>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        
+        <section id="golden-age" class="mb-20">
+            <h3 class="text-5xl font-bold mb-8 text-center"><span class="brand-text">The Golden Age:</span> A Fleeting Dream</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-2">The Rise of the Hawk</h4>
+                    <p class="text-gray-300 mb-4">Under Griffith's brilliant leadership and Guts's unmatched strength, the Band of the Hawk rose from an unknown mercenary group to the most celebrated warriors in Midland, culminating in their victory in the Hundred-Year War.</p>
+                    <div class="chart-container h-64 md:h-80">
+                        <canvas id="riseOfHawkChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-2">A Fated Triumvirate</h4>
+                    <p class="text-gray-300 mb-6">The story's core is the complex, tragic relationship between three individuals: Guts, the warrior seeking purpose; Griffith, the ambitious leader chasing a dream; and Casca, the soldier torn between them.</p>
+                    <div class="space-y-4 text-center">
+                        <div class="bg-gray-800 p-4 rounded-lg font-bold text-xl brand-text">GRIFFITH</div>
+                        <div class="flex justify-around items-center">
+                           <div class="text-2xl text-white/50">▲</div>
+                           <div class="text-2xl text-white/50">▲</div>
+                        </div>
+                        <div class="flex justify-between items-center text-center">
+                            <div class="bg-gray-800 p-4 rounded-lg font-bold text-xl text-white w-1/3">GUTS</div>
+                            <div class="text-white/80 font-bold text-sm w-1/3">MUTUAL<br/>RESPECT<br/>& LOVE</div>
+                            <div class="bg-gray-800 p-4 rounded-lg font-bold text-xl text-white w-1/3">CASCA</div>
+                        </div>
+                        <div class="text-sm text-gray-400 mt-2">Guts's departure to find his own dream shattered this dynamic, triggering Griffith's downfall and setting the stage for betrayal.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="eclipse" class="mb-20 text-center">
+            <h3 class="text-5xl font-bold mb-2 brand-text uppercase">The Eclipse</h3>
+            <p class="text-xl text-gray-300 max-w-4xl mx-auto mb-8">Griffith, broken and hopeless, sacrifices his comrades using the Crimson Behelit to transcend his humanity and be reborn as Femto, the fifth member of the God Hand.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-4">Fate of the Band of the Hawk</h4>
+                    <p class="text-gray-300 mb-4">In a hellish ritual, the Apostles—demons serving the God Hand—descended upon the Band of the Hawk. The entire company was brutally massacred to fuel Griffith's ascension.</p>
+                    <div class="chart-container h-64 md:h-80">
+                        <canvas id="fateOfHawkChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-4">The Birth of a Demon King</h4>
+                    <p class="text-gray-300 mb-4">Shedding his mortal shell and humanity, Griffith underwent a horrific metamorphosis. His first act as the demon king Femto was an unspeakable assault on Guts and Casca.</p>
+                    <div class="flex items-center justify-center space-x-4 md:space-x-8 py-8">
+                        <div class="text-center">
+                            <div class="bg-gray-800 p-4 rounded-lg text-2xl font-bold">GRIFFITH</div>
+                            <div class="text-sm text-gray-400 mt-1">The White Falcon</div>
+                        </div>
+                        <div class="flow-arrow">➔</div>
+                        <div class="text-center">
+                             <div class="accent-bg p-4 rounded-lg text-2xl font-bold text-black">FEMTO</div>
+                             <div class="text-sm text-gray-400 mt-1">The Wing of Darkness</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="black-swordsman" class="mb-20">
+            <h3 class="text-5xl font-bold mb-8 text-center"><span class="brand-text">The Black Swordsman's</span> Quest</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card rounded-lg shadow-lg p-6 md:col-span-2">
+                     <h4 class="text-3xl font-bold text-center mb-4">A New Purpose in a Ruined World</h4>
+                     <p class="text-gray-300 text-center max-w-4xl mx-auto mb-6">After two years of hunting Apostles in a solitary quest for revenge, a near-fatal encounter with the reborn Griffith forces Guts to change his path. He chooses to protect the mentally shattered Casca over his own vengeance, gathering a new, unlikely band of companions to seek healing in the elven land of Elfhelm.</p>
+                </div>
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-4">The Struggle Within: Guts's Psyche</h4>
+                    <p class="text-gray-300 mb-4">Guts's journey is a constant battle against the "Beast of Darkness," a manifestation of his rage and trauma. The Berserker Armor grants him immense power at the cost of his sanity, pushing him ever closer to becoming the monster he fights.</p>
+                    <div class="chart-container h-80">
+                        <canvas id="gutsPsycheChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-4">A New Band of Travelers</h4>
+                    <p class="text-gray-300 mb-4">No longer alone, Guts leads a found family, each member contributing their unique skills and providing an anchor to his humanity.</p>
+                    <ul class="space-y-4 text-lg">
+                        <li class="flex items-center"><span class="text-3xl w-10">⚔️</span> <div><span class="font-bold">Guts:</span> The Struggler, wielder of the Dragonslayer.</div></li>
+                        <li class="flex items-center"><span class="text-3xl w-10">🛡️</span> <div><span class="font-bold">Casca:</span> The Survivor, her mind lost to trauma.</div></li>
+                        <li class="flex items-center"><span class="text-3xl w-10">🧚</span> <div><span class="font-bold">Puck:</span> The Elf, providing comic relief and healing.</div></li>
+                        <li class="flex items-center"><span class="text-3xl w-10">🔥</span> <div><span class="font-bold">Isidro:</span> The Ambitious Thief, aspiring to be a master swordsman.</div></li>
+                        <li class="flex items-center"><span class="text-3xl w-10">🪄</span> <div><span class="font-bold">Schierke:</span> The Young Witch, Guts's anchor to reality.</div></li>
+                        <li class="flex items-center"><span class="text-3xl w-10">🤺</span> <div><span class="font-bold">Serpico & Farnese:</span> Former pursuers, now loyal followers.</div></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="fantasia" class="mb-20 text-center">
+            <h3 class="text-5xl font-bold mb-2 uppercase"><span class="brand-text">Fantasia:</span> The World Transformed</h3>
+            <p class="text-xl text-gray-300 max-w-4xl mx-auto mb-8">Griffith's manipulation of a rival Apostle and the Skull Knight results in the "Great Roar of the Astral World," an event that merges the physical and supernatural realms. Mythical beasts now roam the earth, and humanity's last bastion of safety is Griffith's new kingdom, Falconia.</p>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-4">Humanity's Place in Fantasia</h4>
+                    <p class="text-gray-300 mb-4">The world is now overwhelmingly hostile. Falconia, ruled by the very demon responsible for the calamity, offers the only true sanctuary, a gilded cage for the remnants of humanity.</p>
+                    <div class="chart-container h-64 md:h-80">
+                        <canvas id="worldStateChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card rounded-lg shadow-lg p-6">
+                    <h4 class="text-3xl font-bold mb-4">Current Status of the Trio</h4>
+                    <p class="text-gray-300 mb-4">After a brief, tragic reunion, the main characters are once again separated and at their lowest points, their fates hanging precariously in the balance.</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="border-b-2 border-red-500">
+                                    <th class="p-2">Character</th>
+                                    <th class="p-2">Status</th>
+                                    <th class="p-2">Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-2 font-bold">Guts</td>
+                                    <td class="p-2 brand-text">Broken Will</td>
+                                    <td class="p-2">Captive of the Kushan</td>
+                                </tr>
+                                <tr class="border-b border-gray-700">
+                                    <td class="p-2 font-bold">Griffith</td>
+                                    <td class="p-2 text-yellow-400">Ascended King</td>
+                                    <td class="p-2">Ruler of Falconia</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2 font-bold">Casca</td>
+                                    <td class="p-2 text-blue-400">Restored but Captive</td>
+                                    <td class="p-2">Abducted to Falconia</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="themes" class="text-center py-12">
+             <h3 class="text-5xl font-bold mb-8"><span class="brand-text">Core</span> Themes</h3>
+             <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-4">
+                    <h4 class="text-3xl font-bold mb-2">Struggle vs. Fate</h4>
+                    <p class="text-gray-300">Is life determined by an inescapable causality, or can human will carve its own path? Guts embodies the "struggle" against a predetermined, cruel destiny.</p>
+                </div>
+                <div class="p-4">
+                    <h4 class="text-3xl font-bold mb-2">Humanity & Monstrosity</h4>
+                    <p class="text-gray-300">The series explores the thin line between man and monster, questioning whether true monstrosity lies in demonic form or in human ambition and betrayal.</p>
+                </div>
+                <div class="p-4">
+                     <h4 class="text-3xl font-bold mb-2">Trauma & Healing</h4>
+                    <p class="text-gray-300">Characters are defined by their deep-seated trauma. The narrative examines if healing is possible and what form it takes in a world that constantly inflicts new wounds.</p>
+                </div>
+             </div>
+        </section>
+
+    </main>
+    
+    <footer class="text-center p-8 mt-12 border-t border-gray-800">
+
+    </footer>
+
+<script>
+    const vibrantPalette = {
+        black: '#0D0D0D',
+        white: '#FFFFFF',
+        red: '#D92B04',
+        orange: '#F27405',
+        gold: '#F2A03D',
+        gray: '#a0aec0'
+    };
+
+    const globalChartOptions = {
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: vibrantPalette.white,
+                    font: {
+                        family: "'Roboto Condensed', sans-serif",
+                        size: 14
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) {
+                            return label.join(' ');
+                        }
+                        return label;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: vibrantPalette.gray },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            },
+            y: {
+                ticks: { color: vibrantPalette.gray },
+                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+            }
+        }
+    };
+    
+    function wrapLabel(str, maxWidth) {
+        if (str.length <= maxWidth) {
+            return str;
+        }
+        const words = str.split(' ');
+        let lines = [];
+        let currentLine = words[0];
+
+        for (let i = 1; i < words.length; i++) {
+            if (currentLine.length + words[i].length + 1 < maxWidth) {
+                currentLine += ' ' + words[i];
+            } else {
+                lines.push(currentLine);
+                currentLine = words[i];
+            }
+        }
+        lines.push(currentLine);
+        return lines;
+    }
+
+    new Chart(document.getElementById('riseOfHawkChart'), {
+        type: 'line',
+        data: {
+            labels: ['Joins Midland Army', 'Key Battles', 'Gain Noble Status', wrapLabel('Capture of Fortress of Doldrey', 16)],
+            datasets: [{
+                label: 'Fame & Influence',
+                data: [10, 45, 70, 100],
+                borderColor: vibrantPalette.red,
+                backgroundColor: 'rgba(217, 43, 4, 0.2)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: globalChartOptions
+    });
+
+    new Chart(document.getElementById('fateOfHawkChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Sacrificed', 'Survivors'],
+            datasets: [{
+                label: 'Fate of the Band',
+                data: [98, 2],
+                backgroundColor: [vibrantPalette.red, vibrantPalette.gold],
+                borderColor: vibrantPalette.black,
+                borderWidth: 4
+            }]
+        },
+        options: {
+            ...globalChartOptions,
+            scales: { x: { display: false }, y: { display: false } },
+            cutout: '70%'
+        }
+    });
+
+    new Chart(document.getElementById('gutsPsycheChart'), {
+        type: 'radar',
+        data: {
+            labels: ['Vengeance', 'Humanity', 'Companionship', 'Isolation', wrapLabel('Beast of Darkness', 16)],
+            datasets: [
+                {
+                    label: 'Black Swordsman Arc',
+                    data: [95, 15, 5, 90, 80],
+                    borderColor: vibrantPalette.red,
+                    backgroundColor: 'rgba(217, 43, 4, 0.3)',
+                    pointBackgroundColor: vibrantPalette.red
+                },
+                {
+                    label: 'Post-Conviction Arc',
+                    data: [60, 50, 75, 40, 65],
+                    borderColor: vibrantPalette.gold,
+                    backgroundColor: 'rgba(242, 160, 61, 0.3)',
+                    pointBackgroundColor: vibrantPalette.gold
+                }
+            ]
+        },
+        options: {
+            ...globalChartOptions,
+            scales: {
+                r: {
+                    angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
+                    grid: { color: 'rgba(255, 255, 255, 0.2)' },
+                    pointLabels: { 
+                        color: vibrantPalette.white,
+                        font: { size: 12 }
+                    },
+                    ticks: {
+                        color: vibrantPalette.black,
+                        backdropColor: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        }
+    });
+    
+    new Chart(document.getElementById('worldStateChart'), {
+        type: 'bar',
+        data: {
+            labels: ['The State of the World'],
+            datasets: [{
+                label: 'Hostile Territory (Fantasia)',
+                data: [95],
+                backgroundColor: vibrantPalette.red,
+            }, {
+                label: 'Safe Zones (Falconia)',
+                data: [5],
+                backgroundColor: vibrantPalette.gold,
+            }]
+        },
+        options: {
+            ...globalChartOptions,
+            indexAxis: 'y',
+            scales: {
+                x: { stacked: true, display: false },
+                y: { stacked: true, ticks: { display: false } }
+            },
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+</script>
+</body>
+</html>

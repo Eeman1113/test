@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berserk: An Interactive Narrative Chronicle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Crimson & Ash -->
+    <!-- Application Structure Plan: The SPA is designed as a vertical, scrollable narrative that guides the user through the saga of Berserk. The structure is thematic rather than strictly chronological to improve comprehension. It begins with an introduction to the core characters, establishes their initial relationships, then moves to the pivotal Golden Age and the cataclysm of the Eclipse. Subsequent sections detail the consequences and the transformation of the world. This structure allows a newcomer to understand the character dynamics first, making the impact of the plot events more profound. A sticky navigation bar allows non-linear exploration for users familiar with the story. -->
+    <!-- Visualization & Content Choices: 
+        - Character Relationships (HTML/CSS Diagram): Goal: Organize. To visually establish the core Guts-Griffith-Casca dynamic at the outset. A static diagram is clearer than a complex chart for this.
+        - Hawks' Renown (Line Chart): Goal: Change. To show the meteoric rise of the Band of the Hawk, making their fall more dramatic. Chart.js is perfect for this trend visualization.
+        - Eclipse Massacre (Donut Chart): Goal: Inform. A stark, simple visual to convey the horrifying scale of the sacrifice. A donut chart provides immediate, impactful data.
+        - Guts's Psychological Shift (Radar Chart): Goal: Compare. To visually contrast Guts's internal state before and after he chooses protection over vengeance, highlighting his character development. A radar chart is ideal for multi-attribute comparison.
+        - World Transformation (Stacked Bar Chart): Goal: Compare. To simply and effectively show the dramatic shift in the world's composition after the Great Roar of the Astral World.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            background-color: #111111;
+            color: #E0E0E0;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+        }
+        .bg-brand-dark { background-color: #111111; }
+        .bg-brand-card { background-color: #1F1F1F; }
+        .text-brand-red { color: #B91C1C; }
+        .border-brand-red { border-color: #B91C1C; }
+        .accent-brand-red { background-color: #B91C1C; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="w-full bg-brand-dark sticky top-0 z-50 shadow-lg shadow-black/50">
+        <nav class="container mx-auto px-4">
+            <ul class="flex items-center justify-center space-x-2 md:space-x-6 py-3 text-sm md:text-base overflow-x-auto whitespace-nowrap">
+                <li><a href="#intro" class="hover:text-brand-red transition-colors duration-300 font-bold">Introduction</a></li>
+                <li><a href="#golden-age" class="hover:text-brand-red transition-colors duration-300 font-bold">The Golden Age</a></li>
+                <li><a href="#eclipse" class="hover:text-brand-red transition-colors duration-300 font-bold">The Eclipse</a></li>
+                <li><a href="#struggle" class="hover:text-brand-red transition-colors duration-300 font-bold">The Struggle</a></li>
+                <li><a href="#fantasia" class="hover:text-brand-red transition-colors duration-300 font-bold">Fantasia</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+
+        <section id="intro" class="text-center py-16 md:py-24">
+            <h1 class="text-5xl md:text-7xl font-bold">The Definitive Chronicle of the <span class="text-brand-red">Struggler</span></h1>
+            <p class="max-w-3xl mx-auto mt-6 text-lg text-gray-400">An interactive analysis of Kentaro Miura's *Berserk*, exploring its grand narrative of fate, trauma, and the relentless will to fight against a world plunged into darkness.</p>
+        </section>
+
+        <section class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold">A Triumvirate of Fate</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-400">The entire saga revolves around the profound, love-hate relationship between three individuals, whose intertwined destinies trigger a cataclysm.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-brand-card p-6 rounded-lg border-t-4 border-gray-500">
+                    <h3 class="text-3xl font-bold">GUTS</h3>
+                    <p class="mt-2 text-gray-400">The Struggler. A warrior forged in trauma, defined by his unbreakable will and quest for purpose.</p>
+                </div>
+                <div class="bg-brand-card p-6 rounded-lg border-t-4 border-white">
+                    <h3 class="text-3xl font-bold">GRIFFITH</h3>
+                    <p class="mt-2 text-gray-400">The Hawk of Light. A charismatic leader whose ambition to obtain a kingdom transcends the limits of humanity itself.</p>
+                </div>
+                <div class="bg-brand-card p-6 rounded-lg border-t-4 border-brand-red">
+                    <h3 class="text-3xl font-bold">CASCA</h3>
+                    <p class="mt-2 text-gray-400">The Survivor. A skilled commander torn between her adoration for Griffith and her deepening bond with Guts.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-b border-gray-700 my-16 md:my-24"></div>
+
+        <section id="golden-age" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold">The <span class="text-brand-red">Golden Age</span></h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-400">A fleeting period of belonging and glory, where the Band of the Hawk, led by Griffith's genius and Guts's strength, carved their legend into the annals of the Hundred-Year War.</p>
+            </div>
+            <div class="bg-brand-card p-6 md:p-8 rounded-lg">
+                <h4 class="text-2xl font-bold text-center mb-4">The Rise of the Hawk's Renown</h4>
+                <p class="text-center text-gray-400 mb-6">This chart visualizes the dramatic increase in the Band of the Hawk's fame and influence, from an unknown mercenary group to the saviors of Midland.</p>
+                <div class="chart-container">
+                    <canvas id="riseOfHawkChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-b border-gray-700 my-16 md:my-24"></div>
+
+        <section id="eclipse" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-5xl md:text-6xl font-bold text-brand-red uppercase">The Eclipse</h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-400">The hour of betrayal. At his lowest point, Griffith invokes the Crimson Behelit, sacrificing his comrades to be reborn as a demon god.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="bg-brand-card p-6 md:p-8 rounded-lg">
+                    <h4 class="text-2xl font-bold text-center mb-4">The Feast of Sacrifice</h4>
+                     <p class="text-center text-gray-400 mb-6">In a hellish dimension, the Apostles descended. The chart below illustrates the devastating outcome for the Band of the Hawk.</p>
+                    <div class="chart-container h-64 md:h-80">
+                        <canvas id="fateOfHawkChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-brand-card p-6 md:p-8 rounded-lg text-center">
+                    <h4 class="text-2xl font-bold mb-4">The Birth of Femto</h4>
+                    <p class="text-gray-400 mb-6">As his friends were devoured, Griffith shed his humanity and was reborn. His first act was one of calculated, sadistic cruelty against Guts and Casca.</p>
+                    <div class="flex items-center justify-center space-x-4 md:space-x-8 py-8">
+                        <div class="text-center">
+                            <div class="p-4 rounded-lg text-2xl font-bold border-2 border-white">GRIFFITH</div>
+                            <div class="text-sm text-gray-400 mt-1">The White Falcon</div>
+                        </div>
+                        <div class="text-4xl font-bold text-brand-red">→</div>
+                        <div class="text-center">
+                             <div class="accent-brand-red p-4 rounded-lg text-2xl font-bold text-white">FEMTO</div>
+                             <div class="text-sm text-gray-400 mt-1">The Wing of Darkness</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-b border-gray-700 my-16 md:my-24"></div>
+
+        <section id="struggle" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold">The Black Swordsman's <span class="text-brand-red">Quest</span></h2>
+                <p class="max-w-2xl mx-auto mt-4 text-gray-400">Branded and broken, Guts embarks on a two-year war of revenge before a fateful realization shifts his mission from vengeance to protection, forcing him to confront the "Beast of Darkness" within.</p>
+            </div>
+            <div class="bg-brand-card p-6 md:p-8 rounded-lg">
+                <h4 class="text-2xl font-bold text-center mb-4">The Internal Struggle</h4>
+                <p class="text-center text-gray-400 mb-6">This visualization contrasts Guts's psychological state. Initially driven by pure vengeance, he later rediscovers his humanity through his new companions and his goal to heal Casca.</p>
+                <div class="chart-container">
+                    <canvas id="gutsPsycheChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <div class="border-b border-gray-700 my-16 md:my-24"></div>
+
+        <section id="fantasia" class="mb-16 md:mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl md:text-5xl font-bold"><span class="text-brand-red">Fantasia:</span> A World Transformed</h2>
+                <p class="max-w-3xl mx-auto mt-4 text-gray-400">Griffith's war with a rival Apostle culminates in the "Great Roar of the Astral World," merging the physical and supernatural planes. The world is reborn as a land of myth and magic, where humanity's only safe haven is Griffith's new kingdom, Falconia.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                 <div class="bg-brand-card p-6 md:p-8 rounded-lg">
+                    <h4 class="text-2xl font-bold text-center mb-4">Composition of the New World</h4>
+                     <p class="text-center text-gray-400 mb-6">The barrier between realms has shattered, unleashing creatures of legend and making the world overwhelmingly hostile to humanity.</p>
+                    <div class="chart-container">
+                        <canvas id="worldStateChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-brand-card p-6 md:p-8 rounded-lg">
+                    <h4 class="text-2xl font-bold text-center mb-4">Current Status</h4>
+                    <p class="text-center text-gray-400 mb-6">After the tragic events on Elfhelm, the core characters are once again separated and at their lowest points.</p>
+                     <div class="space-y-4">
+                        <div class="p-3 bg-black/20 rounded">
+                            <h5 class="font-bold text-xl">Guts: <span class="text-brand-red">Will Broken</span></h5>
+                            <p class="text-sm text-gray-400">After Casca's abduction, his legendary will shatters. Currently a passive prisoner of the Kushan army.</p>
+                        </div>
+                        <div class="p-3 bg-black/20 rounded">
+                            <h5 class="font-bold text-xl">Casca: <span class="text-yellow-400">Restored & Captive</span></h5>
+                            <p class="text-sm text-gray-400">Her mind is healed, but she is now a prisoner in Falconia, unable to face Guts due to her trauma.</p>
+                        </div>
+                        <div class="p-3 bg-black/20 rounded">
+                            <h5 class="font-bold text-xl">Griffith: <span class="text-blue-400">Ascended King</span></h5>
+                            <p class="text-sm text-gray-400">Rules his utopian kingdom, revered as a messiah by a world he secretly doomed.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center p-8 mt-12 border-t border-gray-800">
+        <p class="text-gray-500">This interactive narrative was generated based on a comprehensive analysis of the *Berserk* manga by Kentaro Miura.</p>
+        <p class="text-gray-600 text-sm mt-1">Created using HTML, Tailwind CSS, and Chart.js. No SVG graphics or Mermaid JS were used.</p>
+    </footer>
+
+<script>
+    const brandColors = {
+        red: '#B91C1C',
+        red_bg: 'rgba(185, 28, 28, 0.2)',
+        white: '#E0E0E0',
+        gray: '#6B7280',
+        grid: 'rgba(255, 255, 255, 0.1)',
+        yellow: '#FBBF24',
+        yellow_bg: 'rgba(251, 191, 36, 0.2)',
+    };
+
+    const globalChartOptions = (extraOptions = {}) => ({
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            legend: {
+                labels: {
+                    color: brandColors.white,
+                    font: { family: "'Roboto Condensed', sans-serif", size: 14 }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        return Array.isArray(label) ? label.join(' ') : label;
+                    }
+                }
+            }
+        },
+        ...extraOptions
+    });
+
+    function wrapLabel(str, maxWidth = 16) {
+        if (str.length <= maxWidth) return str;
+        const words = str.split(' ');
+        let lines = [];
+        let currentLine = words[0];
+        for (let i = 1; i < words.length; i++) {
+            if ((currentLine + ' ' + words[i]).length > maxWidth) {
+                lines.push(currentLine);
+                currentLine = words[i];
+            } else {
+                currentLine += ' ' + words[i];
+            }
+        }
+        lines.push(currentLine);
+        return lines;
+    }
+
+    new Chart(document.getElementById('riseOfHawkChart'), {
+        type: 'line',
+        data: {
+            labels: ['Guts Joins', 'Key Victories', 'Noble Status', wrapLabel('Capture of Doldrey')],
+            datasets: [{
+                label: 'Renown',
+                data: [10, 40, 75, 100],
+                borderColor: brandColors.red,
+                backgroundColor: brandColors.red_bg,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: globalChartOptions({
+            scales: {
+                x: { ticks: { color: brandColors.gray }, grid: { color: brandColors.grid } },
+                y: { ticks: { color: brandColors.gray }, grid: { color: brandColors.grid } }
+            }
+        })
+    });
+
+    new Chart(document.getElementById('fateOfHawkChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Sacrificed', 'Survivors'],
+            datasets: [{
+                data: [99, 1],
+                backgroundColor: [brandColors.red, brandColors.white],
+                borderColor: '#1F1F1F',
+                borderWidth: 4,
+            }]
+        },
+        options: globalChartOptions({ cutout: '70%' })
+    });
+
+    new Chart(document.getElementById('gutsPsycheChart'), {
+        type: 'radar',
+        data: {
+            labels: ['Vengeance', 'Humanity', 'Companionship', 'Isolation', wrapLabel('Beast of Darkness')],
+            datasets: [
+                {
+                    label: 'Vengeance Quest',
+                    data: [95, 10, 5, 90, 85],
+                    borderColor: brandColors.red,
+                    backgroundColor: brandColors.red_bg,
+                    pointBackgroundColor: brandColors.red
+                },
+                {
+                    label: 'Protection Quest',
+                    data: [50, 60, 80, 20, 65],
+                    borderColor: brandColors.yellow,
+                    backgroundColor: brandColors.yellow_bg,
+                    pointBackgroundColor: brandColors.yellow
+                }
+            ]
+        },
+        options: globalChartOptions({
+            scales: {
+                r: {
+                    angleLines: { color: brandColors.grid },
+                    grid: { color: brandColors.grid },
+                    pointLabels: { color: brandColors.white, font: { size: 12 } },
+                    ticks: { display: false }
+                }
+            }
+        })
+    });
+    
+    new Chart(document.getElementById('worldStateChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Pre-Fantasia', 'Fantasia'],
+            datasets: [{
+                label: 'Mundane',
+                data: [99, 40],
+                backgroundColor: brandColors.gray,
+            }, {
+                label: 'Supernatural',
+                data: [1, 60],
+                backgroundColor: brandColors.red,
+            }]
+        },
+        options: globalChartOptions({
+            scales: {
+                x: { stacked: true, ticks: { color: brandColors.white }, grid: { display: false } },
+                y: { stacked: true, ticks: { color: brandColors.white }, grid: { color: brandColors.grid } }
+            }
+        })
+    });
+
+</script>
+</body>
+</html>

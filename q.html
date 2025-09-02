@@ -222,7 +222,7 @@
     </div>
     <!-- The main application script -->
     <script>
-        var r, e, t, currentLineY = 0, lineHeight = 80, a = r => e => {
+        var r, e, t, allLinesPaths = [], currentLineIndex = 0, textLines = [], a = r => e => {
                 var t = Y(K(e));
                 for (let a = 0; a < K(e); a++) t[a] = r(e[a]);
                 return t
@@ -488,65 +488,50 @@
                 var [t, a] = F(r, e);
                 return [U(t), a, e]
             },
-            E = () => {
-                for (null != rr && window.cancelAnimationFrame(rr); lr.lastChild;) lr.removeChild(lr.lastChild);
-                if (r = 0, e = !1, "-" == or.value) var a = K($.g) / 64,
-                    l = W(a * R());
-                else l = parseInt(or.value);
-                var o = ar("text-input").value;
-                ar("save-button").style.display = "block", Z = o;
-                
-                // Handle multiline text
-                var lines = Z.split('\n');
-                currentLineY = lr.height.baseVal.value / 2 - (lines.length - 1) * lineHeight / 2 + 20;
-                
-                for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-                    let lineText = lines[lineIndex].trim().replace(/\s+/g, " ");
-                    if (lineText.length === 0) {
-                        currentLineY += lineHeight;
-                        continue;
+            processLine = (lineText, lineY, styleNum) => {
+                c = lineText;
+                var n = K(c),
+                    v = Math.min(105 / n, 11);
+                v *= lr.width.baseVal.value / 1240;
+                var f = 50; // Left margin for left alignment
+                var s = lineY;
+                t = v, c = (r => {
+                    var e = r.split("").map(r => r in H ? H[r] : 1);
+                    return e = [2, ...e, 3], Y(e)
+                })(c), er = A(c);
+                var h = ((r, e) => {
+                    var t = [10, r],
+                        a = Y(t[0] * t[1]);
+                    for (let r = 0; r < t[0]; r++)
+                        for (let e = 0; e < t[1]; e++) a[r * t[1] + e] = e - .5;
+                    var l = $.g,
+                        o = O(l, 64 * e, 64 * (e + 1)),
+                        n = $.k,
+                        v = $.R,
+                        i = (o = u(m(o, n), v), Y(10));
+                    return {
+                        a: $.d,
+                        b: $.o,
+                        c: $.e,
+                        d: $.m,
+                        e: $.x,
+                        f: $.a,
+                        w: $.T,
+                        k: i,
+                        u: a,
+                        z: o
                     }
-                    
-                    c = lineText;
-                    var n = K(c),
-                        v = Math.min(105 / n, 11);
-                    v *= lr.width.baseVal.value / 1240;
-                    var f = 50; // Left margin for left alignment
-                    var s = currentLineY;
-                    t = v, c = (r => {
-                        var e = r.split("").map(r => r in H ? H[r] : 1);
-                        return e = [2, ...e, 3], Y(e)
-                    })(c), er = A(c);
-                    var h = ((r, e) => {
-                        var t = [10, r],
-                            a = Y(t[0] * t[1]);
-                        for (let r = 0; r < t[0]; r++)
-                            for (let e = 0; e < t[1]; e++) a[r * t[1] + e] = e - .5;
-                        var l = $.g,
-                            o = O(l, 64 * e, 64 * (e + 1)),
-                            n = $.k,
-                            v = $.R,
-                            i = (o = u(m(o, n), v), Y(10));
-                        return {
-                            a: $.d,
-                            b: $.o,
-                            c: $.e,
-                            d: $.m,
-                            e: $.x,
-                            f: $.a,
-                            w: $.T,
-                            k: i,
-                            u: a,
-                            z: o
-                        }
-                    })(K(c) + 1, l), d = 0, p = [Y([0, 0, 1])], w = [Y([f, s, 1])], g = (r, e) => {
+                })(K(c) + 1, styleNum), d = 0, p = [Y([0, 0, 1])], w = [Y([f, s, 1])];
+                
+                return new Promise((resolve) => {
+                    var g = (r, e) => {
                         var t = Math.round(parseFloat(vr.value));
                         for (let i = 0; i < t; i++) {
                             var a = e[K(e) - 1],
                                 [l, o, r] = L(a, r);
                             if ((d += 1) > 40 * n || o > .5) {
                                 S(w);
-                                currentLineY += lineHeight;
+                                resolve(w);
                                 return;
                             }
                             e.push(l), xi_c = [w[K(w) - 1][0] + v * l[0], w[K(w) - 1][1] - v * l[1], l[2]], xi_c = Y(xi_c), w.push(xi_c)
@@ -556,12 +541,35 @@
                         })
                     };
                     g(h, p);
-                    
-                    // Wait for line completion before starting next line
-                    while (rr !== null) {
-                        // This is synchronous wait, not ideal but maintains simplicity
+                });
+            },
+            E = async () => {
+                for (null != rr && window.cancelAnimationFrame(rr); lr.lastChild;) lr.removeChild(lr.lastChild);
+                
+                r = 0, e = !1;
+                allLinesPaths = [];
+                
+                if ("-" == or.value) var a = K($.g) / 64,
+                    l = W(a * R());
+                else l = parseInt(or.value);
+                
+                var o = ar("text-input").value;
+                ar("save-button").style.display = "block", Z = o;
+                
+                // Handle multiline text
+                textLines = Z.split('\n');
+                var lineHeight = 80;
+                var startY = lr.height.baseVal.value / 2 - (textLines.length - 1) * lineHeight / 2 + 20;
+                
+                for (let lineIndex = 0; lineIndex < textLines.length; lineIndex++) {
+                    let lineText = textLines[lineIndex].trim().replace(/\s+/g, " ");
+                    if (lineText.length === 0) {
+                        continue;
                     }
-                    currentLineY += lineHeight;
+                    
+                    var lineY = startY + lineIndex * lineHeight;
+                    var paths = await processLine(lineText, lineY, l);
+                    allLinesPaths.push(paths);
                 }
             },
             q = (r, e, t) => {

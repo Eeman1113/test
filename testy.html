@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TestGenius - Unified Application</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style type="text/tailwindcss">
+        :root {
+            --primary-50: #eff6ff;
+            --primary-100: #dbeafe;
+            --primary-200: #bfdbfe;
+            --primary-300: #93c5fd;
+            --primary-400: #60a5fa;
+            --primary-500: #3b82f6;
+            --primary-600: #2563eb;
+            --primary-700: #1d4ed8;
+            --primary-800: #1e40af;
+            --primary-900: #1e3a8a;
+            --primary-950: #172554;
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+        }
+        /* Added helper class to hide elements */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-800">
+    <div class="flex min-h-screen">
+        <!-- Common Sidebar Navigation -->
+        <aside class="w-64 flex-col border-r border-gray-200 bg-white p-4 text-gray-700">
+            <div class="flex items-center gap-3 px-2 py-4">
+                <div class="size-8 text-[var(--primary-600)]">
+                    <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-xl font-bold text-gray-900">TestGenius</h1>
+            </div>
+            <nav class="mt-8 flex flex-col gap-2">
+                <a href="#" data-page="dashboard" class="nav-link flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard
+                </a>
+                <a href="#" data-page="projects" class="nav-link flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium">
+                    <span class="material-symbols-outlined">folder</span> Projects
+                </a>
+                <a href="#" data-page="settings" class="nav-link flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium">
+                    <span class="material-symbols-outlined">settings</span> Settings
+                </a>
+            </nav>
+            <div class="mt-auto flex items-center gap-3 border-t border-gray-200 p-4">
+                <div class="size-10 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAlWeRTQDXo54iKzC9GALt8nTTKLrvSmImCyh-JD_fPg069ZAIjk07dWAPPE7D9Ag1UDnexByofOrmcDZpJ8lWoLebTPrAeoThnpEe4bIWm3vDYge-JTNfV3TRa-YBA7La4igfZT0y0aOgevgOOEG9Y4ncsRLBLybygi3uHqONHHaAsq26NKVuapEyj_ks1mmxV3M2dbLM_Kf288ivtRY0DBu8_27x-pqHmYlaWH75-WAehrOhR9zZ9QVgFc2agtBExLjg_Tginl9Q");'></div>
+                <div>
+                    <p class="text-sm font-semibold text-gray-900">Eleanor Rigby</p>
+                    <a class="text-xs text-gray-500 hover:text-gray-900" href="#">Logout</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="flex-1">
+            <!-- Page: Dashboard -->
+            <main id="page-dashboard" class="page-content p-10">
+                <header class="mb-8">
+                    <h1 class="text-4xl font-bold tracking-tight text-gray-900">Dashboard</h1>
+                    <p class="mt-2 text-lg text-gray-600">Welcome back, Eleanor. Here's an overview of your projects.</p>
+                </header>
+                <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                    <div class="lg:col-span-2">
+                        <div class="rounded-xl border border-gray-200 bg-white p-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Recent Projects</h2>
+                            <div class="mt-4 flow-root">
+                                <div class="-mx-6 -my-2 overflow-x-auto">
+                                    <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                        <table class="min-w-full divide-y divide-gray-300">
+                                            <thead>
+                                                <tr>
+                                                    <th class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0" scope="col">Project Name</th>
+                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900" scope="col">Compliance</th>
+                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900" scope="col">Status</th>
+                                                    <th class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900" scope="col">Last Run</th>
+                                                    <th class="relative py-3.5 pl-3 pr-4 sm:pr-0" scope="col">
+                                                        <span class="sr-only">Edit</span>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-200">
+                                                <tr>
+                                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">MediConnect EMR</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">HIPAA</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                        <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Completed</span>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">2 days ago</td>
+                                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                                        <a class="cursor-pointer text-[var(--primary-600)] hover:text-[var(--primary-900)]" data-page="project-details" href="#">View<span class="sr-only">, MediConnect EMR</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">CardioCare Analytics</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">IEC 62304</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                        <span class="inline-flex items-center rounded-md bg-yellow-50 px-2 py-1 text-xs font-medium text-yellow-800 ring-1 ring-inset ring-yellow-600/20">In Progress</span>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">5 hours ago</td>
+                                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                                        <a class="cursor-pointer text-[var(--primary-600)] hover:text-[var(--primary-900)]" data-page="project-details" href="#">View<span class="sr-only">, CardioCare Analytics</span></a>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">SurgiTrack Pro</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">FDA</td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                                        <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Failed</span>
+                                                    </td>
+                                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">1 week ago</td>
+                                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                                        <a class="cursor-pointer text-[var(--primary-600)] hover:text-[var(--primary-900)]" data-page="project-details" href="#">View<span class="sr-only">, SurgiTrack Pro</span></a>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-1">
+                        <div class="rounded-xl border border-gray-200 bg-white p-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Quick Actions</h2>
+                            <div class="mt-4 space-y-4">
+                                <button data-page="create-project" class="flex w-full items-center justify-center gap-2 rounded-md bg-[var(--primary-600)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]">
+                                    <span class="material-symbols-outlined">add_circle</span> New Project
+                                </button>
+                                <button data-modal="upload-requirements" class="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50">
+                                    <span class="material-symbols-outlined">upload_file</span> Import Requirements
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-8 rounded-xl border border-gray-200 bg-white p-6">
+                            <h2 class="text-xl font-semibold text-gray-900">Test Generation Stats</h2>
+                            <div class="mt-4 space-y-4">
+                                <div>
+                                    <div class="flex justify-between">
+                                        <p class="text-sm font-medium text-gray-700">Tests Generated Today</p>
+                                        <p class="text-sm font-medium text-gray-900">1,254</p>
+                                    </div>
+                                    <div class="mt-1 h-2 rounded-full bg-gray-200">
+                                        <div class="h-2 rounded-full bg-[var(--primary-500)]" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between">
+                                        <p class="text-sm font-medium text-gray-700">Coverage Improvement</p>
+                                        <p class="text-sm font-medium text-green-600">+15%</p>
+                                    </div>
+                                    <div class="mt-1 h-2 rounded-full bg-gray-200">
+                                        <div class="h-2 rounded-full bg-green-500" style="width: 15%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Page: Projects List -->
+            <main id="page-projects" class="page-content p-10 hidden">
+                 <div class="mx-auto max-w-7xl">
+                    <header class="mb-8 flex items-center justify-between">
+                        <div>
+                            <h1 class="text-4xl font-bold tracking-tight text-gray-900">Projects</h1>
+                            <p class="mt-2 text-lg text-gray-600">Manage your ongoing and past test generation projects.</p>
+                        </div>
+                        <button data-page="create-project" class="flex items-center gap-2 rounded-md bg-[var(--primary-600)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" type="button">
+                            <span class="material-symbols-outlined">add</span> New Project
+                        </button>
+                    </header>
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Project Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Compliance</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Requirements</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Test Cases</th>
+                                    <th class="relative px-6 py-3" scope="col">
+                                        <span class="sr-only">View</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">MediConnect EMR v2.1</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                            <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8">
+                                                <circle cx="4" cy="4" r="3"></circle>
+                                            </svg> Ongoing
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">IEC 62304</span>
+                                        <span class="ml-1 inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">HIPAA</span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">128</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">1536</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                        <a href="#" data-page="project-details" class="text-[var(--primary-600)] hover:text-[var(--primary-800)]">View</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">CardioCare Mobile App</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                            <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8">
+                                                <circle cx="4" cy="4" r="3"></circle>
+                                            </svg> Ongoing
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">FDA</span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">75</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">890</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                        <a href="#" data-page="project-details" class="text-[var(--primary-600)] hover:text-[var(--primary-800)]">View</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">SurgiBot Control System</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                                            <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-gray-400" fill="currentColor" viewBox="0 0 8 8">
+                                                <circle cx="4" cy="4" r="3"></circle>
+                                            </svg> Completed
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">ISO 13485</span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">342</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">4104</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                        <a href="#" data-page="project-details" class="text-[var(--primary-600)] hover:text-[var(--primary-800)]">View</a>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Patient Portal Upgrade</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">
+                                            <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-gray-400" fill="currentColor" viewBox="0 0 8 8">
+                                                <circle cx="4" cy="4" r="3"></circle>
+                                            </svg> Completed
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                        <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">HIPAA</span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">54</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">648</td>
+                                    <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                        <a href="#" data-page="project-details" class="text-[var(--primary-600)] hover:text-[var(--primary-800)]">View</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Page: Project Details -->
+            <main id="page-project-details" class="page-content p-10 hidden">
+                 <div class="mx-auto max-w-7xl">
+                    <header class="mb-8">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <a href="#" data-page="projects" class="text-sm font-medium text-gray-500 hover:text-gray-700">Projects</a>
+                                <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                                <h1 class="text-xl font-semibold text-gray-900">MediConnect EMR v2.1</h1>
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <p class="text-lg text-gray-600">Detailed view of the MediConnect EMR v2.1 project.</p>
+                                <div class="flex items-center gap-4">
+                                    <button class="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50" type="button">
+                                        <span class="material-symbols-outlined text-base">file_upload</span> Export Report
+                                    </button>
+                                    <button class="flex items-center gap-2 rounded-md bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" type="button">
+                                        <span class="material-symbols-outlined text-base">play_arrow</span> Run Test Generation
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+                        <div class="col-span-1 space-y-8 lg:col-span-2">
+                            <div class="rounded-xl border border-gray-200 bg-white">
+                                <div class="border-b border-gray-200 p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900">Project Summary</h2>
+                                </div>
+                                <div class="p-6">
+                                    <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                                        <div class="sm:col-span-1">
+                                            <dt class="text-sm font-medium text-gray-500">Status</dt>
+                                            <dd class="mt-1 text-sm text-gray-900">
+                                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                                    <svg class="-ml-0.5 mr-1.5 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8">
+                                                        <circle cx="4" cy="4" r="3"></circle>
+                                                    </svg> Ongoing
+                                                </span>
+                                            </dd>
+                                        </div>
+                                        <div class="sm:col-span-1">
+                                            <dt class="text-sm font-medium text-gray-500">Compliance Standards</dt>
+                                            <dd class="mt-1 text-sm text-gray-900">
+                                                <span class="inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">IEC 62304</span>
+                                                <span class="ml-1 inline-flex rounded-full bg-blue-100 px-2 text-xs font-semibold leading-5 text-blue-800">HIPAA</span>
+                                            </dd>
+                                        </div>
+                                        <div class="sm:col-span-1">
+                                            <dt class="text-sm font-medium text-gray-500">Total Requirements</dt>
+                                            <dd class="mt-1 text-sm font-semibold text-gray-900">128</dd>
+                                        </div>
+                                        <div class="sm:col-span-1">
+                                            <dt class="text-sm font-medium text-gray-500">Generated Test Cases</dt>
+                                            <dd class="mt-1 text-sm font-semibold text-gray-900">1536</dd>
+                                        </div>
+                                        <div class="sm:col-span-2">
+                                            <dt class="text-sm font-medium text-gray-500">Project Description</dt>
+                                            <dd class="mt-1 text-sm text-gray-900">This project focuses on the development and testing of version 2.1 of the MediConnect Electronic Medical Records (EMR) system. The AI test generation will cover patient data management, appointment scheduling, and billing modules.</dd>
+                                        </div>
+                                    </dl>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-gray-200 bg-white">
+                                <div class="border-b border-gray-200 p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900">Requirements</h2>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">ID</th>
+                                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Requirement</th>
+                                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Status</th>
+                                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Test Cases</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200 bg-white">
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-001</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">User Authentication</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Covered</span></td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">25</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-002</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Patient Record Creation</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Covered</span></td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">42</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-003</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Appointment Scheduling</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">Partially Covered</span></td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">18</td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-004</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Prescription Management</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800">Not Covered</span></td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">0</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="border-t border-gray-200 bg-gray-50 px-6 py-3 text-right">
+                                    <a href="#" data-page="project-requirements" class="text-sm font-medium text-[var(--primary-600)] hover:text-[var(--primary-800)]">View all requirements</a>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-gray-200 bg-white">
+                                <div class="border-b border-gray-200 p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900">Generated Test Cases</h2>
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Case ID</th>
+                                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Description</th>
+                                                <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Status</th>
+                                                <th class="relative px-6 py-3" scope="col"><span class="sr-only">View</span></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200 bg-white">
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001536</td>
+                                                <td class="w-full max-w-xs truncate whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Verify login with valid credentials</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">Not Synced</span></td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium"><a class="text-[var(--primary-600)] hover:text-[var(--primary-800)]" href="#">Details</a></td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001535</td>
+                                                <td class="w-full max-w-xs truncate whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Verify login with invalid password</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Synced</span></td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium"><a class="text-[var(--primary-600)] hover:text-[var(--primary-800)]" href="#">Details</a></td>
+                                            </tr>
+                                            <tr class="hover:bg-gray-50">
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001534</td>
+                                                <td class="w-full max-w-xs truncate whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">Create a new patient record with all fields filled</td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">Synced</span></td>
+                                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium"><a class="text-[var(--primary-600)] hover:text-[var(--primary-800)]" href="#">Details</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="border-t border-gray-200 bg-gray-50 px-6 py-3 text-right">
+                                    <a href="#" data-page="test-cases" class="text-sm font-medium text-[var(--primary-600)] hover:text-[var(--primary-800)]">View all test cases</a>
+                                </div>
+                            </div>
+                            <!-- Danger Zone Section -->
+                            <div class="rounded-xl border border-red-300 bg-red-50 p-6">
+                                <h2 class="text-lg font-semibold text-red-900">Project Danger Zone</h2>
+                                <p class="mt-1 text-sm text-red-700">Actions in this zone are irreversible. Please proceed with caution.</p>
+                                <div class="mt-6 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                                    <button data-modal="delete-project" class="flex items-center gap-2 rounded-md border border-red-400 bg-white px-4 py-2 text-sm font-semibold text-red-700 shadow-sm hover:bg-red-100" type="button">
+                                        <span class="material-symbols-outlined text-base">delete</span>
+                                        Delete Project
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-1 space-y-8">
+                            <div class="rounded-xl border border-gray-200 bg-white">
+                                <div class="border-b border-gray-200 p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900">Compliance Audit Trail</h2>
+                                </div>
+                                <div class="p-6">
+                                    <ul class="space-y-4">
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1 flex size-5 items-center justify-center rounded-full bg-green-500 text-white"><span class="material-symbols-outlined text-xs">check</span></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">HIPAA privacy rule check passed</p>
+                                                <p class="text-xs text-gray-500">May 25, 2023, 10:30 AM</p>
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1 flex size-5 items-center justify-center rounded-full bg-green-500 text-white"><span class="material-symbols-outlined text-xs">check</span></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">IEC 62304 documentation generated</p>
+                                                <p class="text-xs text-gray-500">May 24, 2023, 02:15 PM</p>
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <div class="mt-1 flex size-5 items-center justify-center rounded-full bg-blue-500 text-white"><span class="material-symbols-outlined text-xs">sync</span></div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">AI model retraining initiated</p>
+                                                <p class="text-xs text-gray-500">May 23, 2023, 09:00 AM</p>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="rounded-xl border border-gray-200 bg-white">
+                                <div class="border-b border-gray-200 p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900">ALM Integration</h2>
+                                </div>
+                                <div class="p-6">
+                                    <div class="flex items-center gap-4">
+                                        <img alt="Jira Logo" class="h-10 w-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3PCUMc-_c_fa-c3hpaaYQo5cKTlqYylMQL8VjYrYgZ1sMUC9C1bPei4zthC652xfeTkp6i-NV4vcKhwYPrLuy0o0G9Ir8MCthUGtDEdoyLk_Ipl3EDovsGYbGPsVNOl_Tqot5Zq88To-V4iH8Kvxne5i4U68HXtCByygcnFIOfsVWzoc9d5tVPI-7ba6p7a2AXIrxwhAikQopIGRP4dLDnQ1vEp1WGxZsJFr0Xf8F70IkTxs1NqIE9vaVjlsZVkGwixB6q8cJXPw" />
+                                        <div>
+                                            <p class="font-semibold text-gray-900">Jira</p>
+                                            <p class="text-sm text-gray-500">Status: <span class="font-medium text-green-600">Connected</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex flex-col gap-2">
+                                        <p class="text-sm"><span class="font-medium">Synced Requirements:</span> 110/128</p>
+                                        <p class="text-sm"><span class="font-medium">Synced Test Cases:</span> 1250/1536</p>
+                                        <button class="mt-2 w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50" type="button">Sync with Jira</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Page: Create New Project -->
+            <main id="page-create-project" class="page-content p-10 hidden">
+                <div class="mx-auto max-w-4xl">
+                    <header class="mb-8">
+                        <div class="flex items-center gap-2">
+                            <a href="#" data-page="projects" class="text-sm font-medium text-gray-500 hover:text-gray-700">Projects</a>
+                            <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                            <h1 class="text-xl font-semibold text-gray-900">Create New Project</h1>
+                        </div>
+                        <p class="mt-2 text-gray-600">Start by providing the basic details for your new software testing project.</p>
+                    </header>
+                    <div class="space-y-12">
+                        <div class="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+                            <h2 class="text-lg font-semibold leading-7 text-gray-900">Project Details</h2>
+                            <p class="mt-1 text-sm leading-6 text-gray-600">This information will be used to identify and organize your project.</p>
+                            <div class="mt-8 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                                <div class="sm:col-span-6">
+                                    <label class="block text-sm font-medium leading-6 text-gray-900" for="project-name">Project Name</label>
+                                    <div class="mt-2">
+                                        <input class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--primary-600)] sm:text-sm sm:leading-6" id="project-name" name="project-name" placeholder="e.g., MediConnect EMR v2.1" type="text" />
+                                    </div>
+                                </div>
+                                <div class="col-span-full">
+                                    <label class="block text-sm font-medium leading-6 text-gray-900" for="project-description">Description</label>
+                                    <div class="mt-2">
+                                        <textarea class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[var(--primary-600)] sm:text-sm sm:leading-6" id="project-description" name="project-description" placeholder="Describe the project's scope and objectives." rows="3"></textarea>
+                                    </div>
+                                </div>
+                                <div class="sm:col-span-6">
+                                    <label class="block text-sm font-medium leading-6 text-gray-900" for="compliance-standards">Compliance Standards</label>
+                                    <p class="mt-1 text-xs text-gray-500">Select all applicable standards. The AI will tailor tests to meet these requirements.</p>
+                                    <div class="mt-4 space-y-4">
+                                        <div class="relative flex items-start">
+                                            <div class="flex h-6 items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-600)]" id="hipaa" name="compliance-standards[]" type="checkbox" />
+                                            </div>
+                                            <div class="ml-3 text-sm leading-6">
+                                                <label class="font-medium text-gray-900" for="hipaa">HIPAA</label>
+                                                <p class="text-gray-500">Health Insurance Portability and Accountability Act</p>
+                                            </div>
+                                        </div>
+                                        <div class="relative flex items-start">
+                                            <div class="flex h-6 items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-600)]" id="iec62304" name="compliance-standards[]" type="checkbox" />
+                                            </div>
+                                            <div class="ml-3 text-sm leading-6">
+                                                <label class="font-medium text-gray-900" for="iec62304">IEC 62304</label>
+                                                <p class="text-gray-500">Medical device software – Software life cycle processes</p>
+                                            </div>
+                                        </div>
+                                        <div class="relative flex items-start">
+                                            <div class="flex h-6 items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-600)]" id="fda-21-cfr" name="compliance-standards[]" type="checkbox" />
+                                            </div>
+                                            <div class="ml-3 text-sm leading-6">
+                                                <label class="font-medium text-gray-900" for="fda-21-cfr">FDA 21 CFR Part 11</label>
+                                                <p class="text-gray-500">Electronic Records; Electronic Signatures</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+                            <h2 class="text-lg font-semibold leading-7 text-gray-900">Requirements Ingestion</h2>
+                            <p class="mt-1 text-sm leading-6 text-gray-600">Provide the initial set of requirements for the AI to analyze.</p>
+                            <div class="mt-8">
+                                <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2">
+                                    <button data-modal="upload-requirements" type="button" class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-gray-400">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                                            <span class="material-symbols-outlined text-3xl text-gray-500">upload_file</span>
+                                        </div>
+                                        <span class="mt-4 text-sm font-semibold text-[var(--primary-600)] hover:text-[var(--primary-500)]">Upload a file</span>
+                                        <p class="mt-1 text-xs text-gray-500">DOCX, PDF, XLSX up to 20MB</p>
+                                    </button>
+                                    <div class="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-gray-400">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+                                            <img alt="Jira Logo" class="h-6 w-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3PCUMc-_c_fa-c3hpaaYQo5cKTlqYylMQL8VjYrYgZ1sMUC9C1bPei4zthC652xfeTkp6i-NV4vcKhwYPrLuy0o0G9Ir8MCthUGtDEdoyLk_Ipl3EDovsGYbGPsVNOl_Tqot5Zq88To-V4iH8Kvxne5i4U68HXtCByygcnFIOfsVWzoc9d5tVPI-7ba6p7a2AXIrxwhAikQopIGRP4dLDnQ1vEp1WGxZsJFr0Xf8F70IkTxs1NqIE9vaVjlsZVkGwixB6q8cJXPw" />
+                                        </div>
+                                        <button class="mt-4 rounded-md bg-white px-3 py-2 text-sm font-semibold text-[var(--primary-600)] shadow-sm ring-1 ring-inset ring-[var(--primary-300)] hover:bg-gray-50" type="button">
+                                            Connect to Jira
+                                        </button>
+                                        <p class="mt-1 text-xs text-gray-500">Sync requirements from your ALM tool</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex items-center justify-end gap-x-6">
+                            <button class="text-sm font-semibold leading-6 text-gray-900" type="button" data-page="projects">Cancel</button>
+                            <button class="rounded-md bg-[var(--primary-600)] px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" type="submit">Create Project</button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Page: Project Requirements -->
+            <main id="page-project-requirements" class="page-content p-10 hidden">
+                 <div class="mx-auto max-w-7xl">
+                    <header class="mb-8">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <a href="#" data-page="projects" class="text-sm font-medium text-gray-500 hover:text-gray-700">Projects</a>
+                                <span class="material-symbols-outlined text-sm text-gray-400">chevron_right</span>
+                                <a href="#" data-page="project-details" class="text-sm font-medium text-gray-500 hover:text-gray-700">MediConnect EMR v2.1</a>
+                                <span class="material-symbols-outlined text-sm text-gray-400">chevron_right</span>
+                                <h1 class="text-lg font-semibold text-gray-900">Requirements</h1>
+                            </div>
+                            <div class="mt-4 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                                <p class="text-lg text-gray-600">Manage all requirements for the MediConnect EMR v2.1 project.</p>
+                                <div class="flex w-full flex-col gap-2 md:w-auto md:flex-row md:items-center">
+                                    <button data-modal="upload-requirements" class="flex w-full items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 md:w-auto" type="button">
+                                        <span class="material-symbols-outlined text-base">file_upload</span>
+                                        Import
+                                    </button>
+                                    <button class="flex w-full items-center justify-center gap-2 rounded-md bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)] md:w-auto" type="button">
+                                        <span class="material-symbols-outlined text-base">add</span>
+                                        Add Requirement
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <div class="rounded-xl border border-gray-200 bg-white">
+                        <div class="border-b border-gray-200 p-6">
+                            <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <h2 class="text-lg font-semibold text-gray-900">All Requirements (128)</h2>
+                                <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                                    <div class="relative w-full sm:w-64">
+                                        <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                                        <input class="w-full rounded-md border-gray-300 py-2 pl-10 pr-4 text-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)]" placeholder="Search requirements..." type="search" />
+                                    </div>
+                                    <select class="form-select w-full rounded-md border-gray-300 text-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:w-40">
+                                        <option>Status: All</option>
+                                        <option>Covered</option>
+                                        <option>Partially Covered</option>
+                                        <option>Not Covered</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">
+                                            <div class="flex items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" />
+                                            </div>
+                                        </th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Requirement</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Traceability</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Test Cases</th>
+                                        <th class="relative px-6 py-3" scope="col"><span class="sr-only">Actions</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 bg-white">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" />
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-001</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">The system shall allow authorized users to log in with a unique username and password.</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800"><span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>Covered</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                <span class="material-symbols-outlined text-sm">link</span> TC-001, TC-002
+                                            </span>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">25</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-400 hover:text-[var(--primary-600)]">
+                                                <span class="material-symbols-outlined">more_horiz</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" />
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-002</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">The system must allow for the creation of a new patient record, including demographic information.</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800"><span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>Covered</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                <span class="material-symbols-outlined text-sm">link</span> TC-105, TC-106
+                                            </span>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">42</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-400 hover:text-[var(--primary-600)]">
+                                                <span class="material-symbols-outlined">more_horiz</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" />
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-003</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">Users must be able to schedule, reschedule, and cancel patient appointments.</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800"><span class="h-1.5 w-1.5 rounded-full bg-yellow-500"></span>Partially Covered</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                <span class="material-symbols-outlined text-sm">link</span> TC-210
+                                            </span>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">18</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-400 hover:text-[var(--primary-600)]">
+                                                <span class="material-symbols-outlined">more_horiz</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" />
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-004</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">The system needs to allow clinicians to create, view, and manage patient prescriptions.</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800"><span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>Not Covered</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">-</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">0</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-400 hover:text-[var(--primary-600)]">
+                                                <span class="material-symbols-outlined">more_horiz</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" />
+                                            </div>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">REQ-005</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">The system must comply with HIPAA regulations regarding patient data privacy and security.</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800"><span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>Covered</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                                                <span class="material-symbols-outlined text-sm">link</span> TC-301, TC-302
+                                            </span>
+                                        </td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-700">35</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-400 hover:text-[var(--primary-600)]">
+                                                <span class="material-symbols-outlined">more_horiz</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                            <div class="flex flex-1 justify-between sm:hidden">
+                                <a class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="#">Previous</a>
+                                <a class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="#">Next</a>
+                            </div>
+                            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Showing
+                                        <span class="font-medium">1</span>
+                                        to
+                                        <span class="font-medium">5</span>
+                                        of
+                                        <span class="font-medium">128</span>
+                                        results
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+                                        <a class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">
+                                            <span class="sr-only">Previous</span>
+                                            <span aria-hidden="true" class="material-symbols-outlined">chevron_left</span>
+                                        </a>
+                                        <a aria-current="page" class="relative z-10 inline-flex items-center bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" href="#">1</a>
+                                        <a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">2</a>
+                                        <a class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex" href="#">3</a>
+                                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">...</span>
+                                        <a class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex" href="#">10</a>
+                                        <a class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">
+                                            <span class="sr-only">Next</span>
+                                            <span aria-hidden="true" class="material-symbols-outlined">chevron_right</span>
+                                        </a>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Page: Test Cases -->
+            <main id="page-test-cases" class="page-content p-10 hidden">
+                 <div class="mx-auto max-w-7xl">
+                    <header class="mb-8">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <a href="#" data-page="projects" class="text-sm font-medium text-gray-500 hover:text-gray-700">Projects</a>
+                                <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                                <a href="#" data-page="project-details" class="text-sm font-medium text-gray-500 hover:text-gray-700">MediConnect EMR v2.1</a>
+                                <span class="material-symbols-outlined text-gray-400">chevron_right</span>
+                                <h1 class="text-xl font-semibold text-gray-900">Test Cases</h1>
+                            </div>
+                            <div class="mt-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                                <p class="text-lg text-gray-600">Manage and review all generated test cases.</p>
+                                <div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+                                    <button class="flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50" type="button">
+                                        <span class="material-symbols-outlined text-base">file_upload</span>
+                                        Export
+                                    </button>
+                                    <button class="flex items-center justify-center gap-2 rounded-md bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" type="button">
+                                        <span class="material-symbols-outlined text-base">add</span>
+                                        Create Test Case
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <div class="rounded-xl border border-gray-200 bg-white">
+                        <div class="border-b border-gray-200 p-6">
+                            <div class="flex flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
+                                <h2 class="text-lg font-semibold text-gray-900">All Test Cases (1536)</h2>
+                                <div class="flex w-full flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-end md:w-auto">
+                                    <div class="relative w-full sm:w-64">
+                                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                                        <input class="w-full rounded-md border-gray-300 pl-10 text-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)]" placeholder="Search test cases..." type="search" />
+                                    </div>
+                                    <div class="flex w-full items-center gap-2 sm:w-auto">
+                                        <label class="text-sm font-medium text-gray-700" for="status-filter">Status:</label>
+                                        <select class="form-select w-full rounded-md border-gray-300 text-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:w-auto" id="status-filter">
+                                            <option>All</option>
+                                            <option>Passed</option>
+                                            <option>Failed</option>
+                                            <option>Not Run</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex w-full items-center gap-2 sm:w-auto">
+                                        <label class="text-sm font-medium text-gray-700" for="requirement-filter">Requirement:</label>
+                                        <select class="form-select w-full rounded-md border-gray-300 text-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:w-auto" id="requirement-filter">
+                                            <option>All</option>
+                                            <option>REQ-001</option>
+                                            <option>REQ-002</option>
+                                            <option>REQ-003</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" /></th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Case ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Description</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Execution Status</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Linked Requirement</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500" scope="col">Last Run</th>
+                                        <th class="relative px-6 py-3" scope="col"><span class="sr-only">Actions</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200 bg-white">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" /></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001536</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">Verify login with valid username and password</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"><span class="material-symbols-outlined text-sm">check_circle</span>Passed</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium"><a class="text-[var(--primary-600)] hover:underline" href="#">REQ-001</a></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">May 25, 2023</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <span class="material-symbols-outlined">more_vert</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" /></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001535</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">Verify login attempt with invalid password</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"><span class="material-symbols-outlined text-sm">cancel</span>Failed</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium"><a class="text-[var(--primary-600)] hover:underline" href="#">REQ-001</a></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">May 25, 2023</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <span class="material-symbols-outlined">more_vert</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" /></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001534</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">Create a new patient record with all required fields</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"><span class="material-symbols-outlined text-sm">check_circle</span>Passed</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium"><a class="text-[var(--primary-600)] hover:underline" href="#">REQ-002</a></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">May 24, 2023</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <span class="material-symbols-outlined">more_vert</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" /></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001533</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">Attempt to create a patient record with missing required fields</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800"><span class="material-symbols-outlined text-sm">error</span>Blocked</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium"><a class="text-[var(--primary-600)] hover:underline" href="#">REQ-002</a></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">May 24, 2023</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <span class="material-symbols-outlined">more_vert</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" /></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001532</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">Schedule a new appointment for an existing patient</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"><span class="material-symbols-outlined text-sm">schedule</span>Not Run</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium"><a class="text-[var(--primary-600)] hover:underline" href="#">REQ-003</a></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">N/A</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <span class="material-symbols-outlined">more_vert</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" type="checkbox" /></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-500">TC-001531</td>
+                                        <td class="max-w-sm truncate px-6 py-4 text-sm font-medium text-gray-900">Verify appointment conflict detection</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500"><span class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800"><span class="material-symbols-outlined text-sm">schedule</span>Not Run</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm font-medium"><span class="text-gray-400">Unlinked</span></td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-500">N/A</td>
+                                        <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                            <button class="text-gray-500 hover:text-gray-700">
+                                                <span class="material-symbols-outlined">more_vert</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+                            <div class="flex flex-1 justify-between sm:hidden">
+                                <a class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="#">Previous</a>
+                                <a class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50" href="#">Next</a>
+                            </div>
+                            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-700">
+                                        Showing
+                                        <span class="font-medium">1</span>
+                                        to
+                                        <span class="font-medium">10</span>
+                                        of
+                                        <span class="font-medium">1536</span>
+                                        results
+                                    </p>
+                                </div>
+                                <div>
+                                    <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+                                        <a class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">
+                                            <span class="sr-only">Previous</span>
+                                            <span aria-hidden="true" class="material-symbols-outlined">chevron_left</span>
+                                        </a>
+                                        <a aria-current="page" class="relative z-10 inline-flex items-center bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" href="#">1</a>
+                                        <a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">2</a>
+                                        <a class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex" href="#">3</a>
+                                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">...</span>
+                                        <a class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex" href="#">8</a>
+                                        <a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">9</a>
+                                        <a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">10</a>
+                                        <a class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0" href="#">
+                                            <span class="sr-only">Next</span>
+                                            <span aria-hidden="true" class="material-symbols-outlined">chevron_right</span>
+                                        </a>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Page: Settings -->
+            <main id="page-settings" class="page-content p-10 hidden">
+                <div class="mx-auto max-w-4xl">
+                    <header class="mb-10">
+                        <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
+                        <p class="mt-2 text-lg text-gray-600">Manage your profile, notifications, and system configurations.</p>
+                    </header>
+                    <div class="space-y-12">
+                        <div class="rounded-xl border border-gray-200 bg-white">
+                            <div class="border-b border-gray-200 p-6">
+                                <h2 class="text-lg font-semibold text-gray-900">Profile</h2>
+                                <p class="mt-1 text-sm text-gray-500">Update your personal information and profile picture.</p>
+                            </div>
+                            <div class="p-6">
+                                <form class="space-y-6">
+                                    <div class="flex items-center gap-6">
+                                        <div class="size-24 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAlWeRTQDXo54iKzC9GALt8nTTKLrvSmImCyh-JD_fPg069ZAIjk07dWAPPE7D9Ag1UDnexByofOrmcDZpJ8lWoLebTPrAeoThnpEe4bIWm3vDYge-JTNfV3TRa-YBA7La4igfZT0y0aOgevgOOEG9Y4ncsRLBLybygi3uHqONHHaAsq26NKVuapEyj_ks1mmxV3M2dbLM_Kf288ivtRY0DBu8_27x-pqHmYlaWH75-WAehrOhR9zZ9QVgFc2agtBExLjg_Tginl9Q");'></div>
+                                        <div>
+                                            <button class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50" type="button">Change</button>
+                                            <button class="ml-2 text-sm font-medium text-gray-500 hover:text-gray-700" type="button">Remove</button>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700" for="fullName">Full Name</label>
+                                            <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:text-sm" id="fullName" type="text" value="Eleanor Rigby" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700" for="email">Email Address</label>
+                                            <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:text-sm" id="email" type="email" value="eleanor.rigby@example.com" />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700" for="jobTitle">Job Title</label>
+                                        <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:text-sm" id="jobTitle" type="text" value="QA Lead" />
+                                    </div>
+                                    <div class="text-right">
+                                        <button class="rounded-md bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" type="submit">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="rounded-xl border border-gray-200 bg-white">
+                            <div class="border-b border-gray-200 p-6">
+                                <h2 class="text-lg font-semibold text-gray-900">Notifications</h2>
+                                <p class="mt-1 text-sm text-gray-500">Choose how you want to be notified about system events.</p>
+                            </div>
+                            <div class="divide-y divide-gray-200 p-6">
+                                <div class="flex items-center justify-between py-4">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Test Generation Complete</p>
+                                        <p class="text-sm text-gray-500">When AI has finished generating test cases for a project.</p>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <label class="flex items-center text-sm text-gray-600" for="email-test-complete"><input checked="" class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" id="email-test-complete" type="checkbox" /> <span class="ml-2">Email</span></label>
+                                        <label class="flex items-center text-sm text-gray-600" for="push-test-complete"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" id="push-test-complete" type="checkbox" /> <span class="ml-2">In-App</span></label>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between py-4">
+                                    <div>
+                                        <p class="font-medium text-gray-900">Compliance Audit Fails</p>
+                                        <p class="text-sm text-gray-500">When a compliance check fails during the audit process.</p>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <label class="flex items-center text-sm text-gray-600" for="email-audit-fail"><input checked="" class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" id="email-audit-fail" type="checkbox" /> <span class="ml-2">Email</span></label>
+                                        <label class="flex items-center text-sm text-gray-600" for="push-audit-fail"><input checked="" class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" id="push-audit-fail" type="checkbox" /> <span class="ml-2">In-App</span></label>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between py-4">
+                                    <div>
+                                        <p class="font-medium text-gray-900">ALM Sync Status</p>
+                                        <p class="text-sm text-gray-500">Notifications about ALM integration synchronization status.</p>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <label class="flex items-center text-sm text-gray-600" for="email-alm-sync"><input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" id="email-alm-sync" type="checkbox" /> <span class="ml-2">Email</span></label>
+                                        <label class="flex items-center text-sm text-gray-600" for="push-alm-sync"><input checked="" class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" id="push-alm-sync" type="checkbox" /> <span class="ml-2">In-App</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rounded-xl border border-gray-200 bg-white">
+                            <div class="border-b border-gray-200 p-6">
+                                <h2 class="text-lg font-semibold text-gray-900">System Configurations</h2>
+                                <p class="mt-1 text-sm text-gray-500">Manage system-wide settings for test generation and compliance.</p>
+                            </div>
+                            <div class="p-6">
+                                <form class="space-y-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700" for="default-compliance">Default Compliance Standards</label>
+                                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:text-sm" id="default-compliance" multiple="">
+                                            <option selected="">HIPAA</option>
+                                            <option selected="">IEC 62304</option>
+                                            <option>FDA 21 CFR Part 11</option>
+                                            <option>GDPR</option>
+                                        </select>
+                                        <p class="mt-2 text-xs text-gray-500">Select the default compliance standards for new projects.</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700" for="ai-model">AI Model Version</label>
+                                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-500)] focus:ring-[var(--primary-500)] sm:text-sm" id="ai-model">
+                                            <option>TestGen-v3.2 (Latest)</option>
+                                            <option>TestGen-v3.1</option>
+                                            <option>TestGen-v2.5 (Legacy)</option>
+                                        </select>
+                                    </div>
+                                    <div class="relative flex items-start">
+                                        <div class="flex h-6 items-center">
+                                            <input checked="" class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-500)]" id="auto-retrain" type="checkbox" />
+                                        </div>
+                                        <div class="ml-3 text-sm leading-6">
+                                            <label class="font-medium text-gray-900" for="auto-retrain">Enable Automatic AI Model Retraining</label>
+                                            <p class="text-gray-500">Periodically retrain the AI model with new project data to improve accuracy.</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <button class="rounded-md bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" type="submit">Save Configurations</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal: Upload Requirements -->
+    <div id="modal-upload-requirements" class="modal-container hidden fixed inset-0 z-10 bg-gray-900/50 flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg m-4">
+            <div class="p-6 sm:p-8">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Upload New Requirements</h2>
+                        <p class="mt-2 text-sm text-gray-600">Add new documents to the project to generate test cases.</p>
+                    </div>
+                    <button class="modal-close text-gray-400 hover:text-gray-600" type="button">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <div class="mt-8 space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium leading-6 text-gray-900" for="document-type">Document Type</label>
+                        <div class="mt-2">
+                            <select class="form-select block w-full rounded-md border-0 py-2.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-[var(--primary-600)] sm:text-sm sm:leading-6" id="document-type" name="document-type">
+                                <option>Software Requirements Specification (SRS)</option>
+                                <option selected="">Functional Requirements Document (FRD)</option>
+                                <option>Use Case Document</option>
+                                <option>Change Request Document</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium leading-6 text-gray-900">Upload Document</label>
+                        <div class="mt-2 flex justify-center rounded-lg border-2 border-dashed border-gray-300 px-6 py-10">
+                            <div class="text-center">
+                                <span class="material-symbols-outlined text-5xl text-gray-400">cloud_upload</span>
+                                <div class="mt-4 flex text-sm leading-6 text-gray-600">
+                                    <label class="relative cursor-pointer rounded-md bg-white font-semibold text-[var(--primary-600)] focus-within:outline-none focus-within:ring-2 focus-within:ring-[var(--primary-600)] focus-within:ring-offset-2 hover:text-[var(--primary-500)]" for="file-upload">
+                                        <span>Upload a file</span>
+                                        <input class="sr-only" id="file-upload" name="file-upload" type="file" />
+                                    </label>
+                                    <p class="pl-1">or drag and drop</p>
+                                </div>
+                                <p class="text-xs leading-5 text-gray-600">PDF, DOCX, XLSX up to 10MB</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-sm font-medium leading-6 text-gray-900">Parsing Preferences</p>
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input checked="" class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-600)]" id="extract-tables" name="extract-tables" type="checkbox" />
+                            </div>
+                            <div class="ml-3 text-sm leading-6">
+                                <label class="font-medium text-gray-900" for="extract-tables">Extract Tables</label>
+                                <p class="text-gray-500">Identify and parse tables within the document.</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input checked="" class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-600)]" id="identify-sections" name="identify-sections" type="checkbox" />
+                            </div>
+                            <div class="ml-3 text-sm leading-6">
+                                <label class="font-medium text-gray-900" for="identify-sections">Identify Sections</label>
+                                <p class="text-gray-500">Automatically detect and categorize requirement sections.</p>
+                            </div>
+                        </div>
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input class="h-4 w-4 rounded border-gray-300 text-[var(--primary-600)] focus:ring-[var(--primary-600)]" id="incremental-update" name="incremental-update" type="checkbox" />
+                            </div>
+                            <div class="ml-3 text-sm leading-6">
+                                <label class="font-medium text-gray-900" for="incremental-update">Incremental Update</label>
+                                <p class="text-gray-500">Compare with existing requirements and only add new ones.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-x-4 border-t border-gray-200 bg-gray-50 px-6 sm:px-8 py-4">
+                <button class="modal-close text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100 px-4 py-2 rounded-md" type="button">Cancel</button>
+                <button class="flex items-center gap-2 rounded-md bg-[var(--primary-600)] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[var(--primary-500)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary-600)]" type="submit">
+                    <span class="material-symbols-outlined text-base">file_upload</span>
+                    Upload and Process
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Delete Project -->
+    <div id="modal-delete-project" class="modal-container hidden fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 transition-opacity" aria-hidden="true"></div>
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <div class="bg-white p-6">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <span class="material-symbols-outlined text-red-600">warning</span>
+                        </div>
+                        <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-lg font-semibold leading-6 text-gray-900" id="modal-title">Delete Project</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">Are you sure you want to delete the project "MediConnect EMR v2.1"?</p>
+                                <div class="mt-4 rounded-md border border-red-200 bg-red-50 p-3">
+                                    <p class="text-sm font-bold text-red-800">This will permanently delete:</p>
+                                    <ul class="mt-2 list-inside list-disc space-y-1 text-sm text-red-700">
+                                        <li>All <strong>128</strong> project requirements.</li>
+                                        <li>All <strong>1536</strong> generated test cases.</li>
+                                        <li>All associated compliance audit trail data.</li>
+                                    </ul>
+                                </div>
+                                <p class="mt-4 text-sm text-gray-500">This action cannot be undone. Please type <strong class="text-gray-900">MediConnect EMR v2.1</strong> to confirm.</p>
+                                <input class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6" type="text" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto" type="button">Delete Project</button>
+                    <button class="modal-close mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" type="button">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Select all page containers and navigation triggers
+            const pages = document.querySelectorAll('.page-content');
+            const navTriggers = document.querySelectorAll('[data-page]');
+            const modalTriggers = document.querySelectorAll('[data-modal]');
+            const modalClosers = document.querySelectorAll('.modal-close');
+            const sidebarLinks = document.querySelectorAll('.nav-link');
+
+            // Function to show a page by its ID and hide others
+            const showPage = (pageId) => {
+                // Hide all pages
+                pages.forEach(page => {
+                    page.classList.add('hidden');
+                });
+                
+                // Show the requested page
+                const activePage = document.getElementById(pageId);
+                if (activePage) {
+                    activePage.classList.remove('hidden');
+                }
+
+                // Update the active state in the sidebar
+                const pageKey = pageId.replace('page-', '');
+                sidebarLinks.forEach(link => {
+                    // Reset styles
+                    link.classList.remove('bg-[var(--primary-500)]', 'text-white');
+                    link.classList.add('text-gray-600', 'hover:bg-gray-100');
+                    
+                    // Apply active style
+                    if (link.dataset.page === pageKey) {
+                        link.classList.add('bg-[var(--primary-500)]', 'text-white');
+                        link.classList.remove('text-gray-600', 'hover:bg-gray-100');
+                    }
+                });
+            };
+
+            // Add click listeners to all navigation triggers (sidebar, buttons, links)
+            navTriggers.forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault(); // Prevent default link behavior
+                    const targetPageId = 'page-' + trigger.dataset.page;
+                    showPage(targetPageId);
+                    window.scrollTo(0, 0); // Scroll to top on page change
+                });
+            });
+
+            // --- Modal Handling ---
+            
+            // Function to open a modal
+            const openModal = (modalId) => {
+                 const modal = document.getElementById(modalId);
+                 if(modal) {
+                     modal.classList.remove('hidden');
+                 }
+            };
+
+            // Function to close a modal
+            const closeModal = (modal) => {
+                if(modal) {
+                    modal.classList.add('hidden');
+                }
+            };
+
+            // Add click listeners to modal trigger buttons
+            modalTriggers.forEach(trigger => {
+                trigger.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetModalId = 'modal-' + trigger.dataset.modal;
+                    openModal(targetModalId);
+                });
+            });
+
+            // Add click listeners to modal close buttons (X, Cancel, etc.)
+            modalClosers.forEach(closer => {
+                closer.addEventListener('click', () => {
+                   const modal = closer.closest('.modal-container');
+                   closeModal(modal);
+                });
+            });
+
+            // Add click listener to close modal by clicking on the background overlay
+            document.querySelectorAll('.modal-container').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    // Check if the click is on the modal container itself (the overlay)
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // --- Initial State ---
+            // Show the dashboard by default when the app loads
+            showPage('page-dashboard');
+        });
+    </script>
+</body>
+
+</html>

@@ -131,6 +131,7 @@ under 10 ms.</textarea>
   </ul>
 </body>
 </html>
+
  -->
 
 
@@ -138,59 +139,140 @@ under 10 ms.</textarea>
 
 <!doctype html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8" />
-  <script type="module">
-    // We can import `harper.js` using native ECMAScript syntax.
-    // TODO: Update to the latest version.
-    import {WorkerLinter, binaryInlined} from 'https://unpkg.com/harper.js@0.54.0/dist/harper.js';
+  <meta charset="utf-8" />
+  <title>harper js</title>
 
-    // Since we are working in the browser, we can use either `WorkerLinter`, which doesn't block the event loop, or `LocalLinter`, which does.
-    let linter = new WorkerLinter({binary: binaryInlined});
+  <style>
+   .error-text {
+      color: #c94a4a; /* A shade of red */
+      font-weight: bold;
+    }
+    .error-message {
+      color: #555; /* Dark grey for the message text */
+    }
+   .error-suggestion {
+      color: #4CAF50; /* A shade of green */
+      font-style: italic;
+    }
+  </style>
 
-    // Every time the `<textarea/>` received an input, we process it and update our list.
-    async function onInput(e) {
-      let lints = await linter.lint(e.target.value);
+  <script type="module">
+    // Import the WorkerLinter class from the jsDelivr CDN.
+    // Using version 0.14.0 which includes improved logic for matching word pairs.
+    import { WorkerLinter } from 'https://cdn.jsdelivr.net/npm/harper.js@0.14.0/dist/harper.js';
 
-      let list = document.getElementById('errorlist');
-      // Clear previous results
-      list.innerHTML = '';
+    // Define a configuration object to explicitly enable specific linters.
+    // This ensures that all desired checks (like sentence capitalization and spacing) are active.
+    const harperConfig = {
+      linters: {
+        'SentenceCapitalization': true,
+        'Spaces': true,
+        'SpellCheck': true,
+        'RepeatedWords': true,
+        'AnA': true,
+        'Matcher': true,
+      }
+    };
 
-      for (let lint of lints) {
-        let item = document.createElement('LI');
-        var text = document.createTextNode(lint.message());
-        item.appendChild(text);
-        list.appendChild(item);
-      }
-    }
+    // Instantiate the linter with the custom configuration.
+    // WorkerLinter is essential for browser environments as it runs the analysis 
+    // in a background thread, keeping the UI responsive.
+    let linter = new WorkerLinter(harperConfig);
 
-    let inputField = document.getElementById('maininput');
-    inputField.addEventListener('input', onInput);
-    onInput({target: inputField});
-  </script>
+    // This async function is called whenever the user types in the textarea.
+    async function onInput(e) {
+      // Retrieve the current text and replace non-breaking spaces (\u00A0) with regular spaces.
+      // This helps the linter correctly identify issues like double spacing.
+      const textToLint = e.target.value.replace(/\u00A0/g, ' ');
 
-  <!--Make the page look good using SimpleCSS-->
-  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
+      // Asynchronously call the lint method and wait for the results.
+      let lints = await linter.lint(textToLint);
+
+      // Get a reference to the list where errors will be displayed.
+      let list = document.getElementById('errorlist');
+
+      // Clear any previous results from the list.
+      list.innerHTML = '';
+
+      // Iterate over the array of linting errors returned by Harper.
+      for (let lint of lints) {
+        // The lint object contains a `span()` method with start and end indices
+        // for the error in the text.
+        const span = lint.span();
+        const incorrectText = textToLint.substring(span.start, span.end);
+        
+        // Create a new list item for each error.
+        let item = document.createElement('LI');
+
+        // Create a span for the incorrect text and style it.
+        const incorrectTextSpan = document.createElement('span');
+        incorrectTextSpan.className = 'error-text';
+        incorrectTextSpan.textContent = `"${incorrectText}"`;
+        item.appendChild(incorrectTextSpan);
+
+        // Create a span for the message and style it.
+        const messageSpan = document.createElement('span');
+        messageSpan.className = 'error-message';
+        messageSpan.textContent = ` — ${lint.message()}`;
+        item.appendChild(messageSpan);
+
+        // Check if there are suggestions and format them into a styled span.
+        if (lint.suggestion_count() > 0) {
+            // The `suggestions()` method returns an iterable of suggestion objects.
+            const suggestions = Array.from(lint.suggestions()).map(sug => {
+                // The suggestion object has a `get_replacement_text()` method.
+                return `‘${sug.get_replacement_text()}’`;
+            }).join(', ');
+            
+            const suggestionsSpan = document.createElement('span');
+            suggestionsSpan.className = 'error-suggestion';
+            suggestionsSpan.textContent = ` Suggestion(s): ${suggestions}`;
+            item.appendChild(suggestionsSpan);
+        }
+        
+        list.appendChild(item);
+      }
+    }
+
+    // Wait for the DOM to be fully loaded before attaching event listeners.
+    document.addEventListener('DOMContentLoaded', () => {
+      let inputField = document.getElementById('maininput');
+      // Attach the onInput function to the 'input' event of the textarea.
+      inputField.addEventListener('input', onInput);
+      // Trigger an initial lint check on the pre-filled text.
+      onInput({ target: inputField });
+    });
+  </script>
+
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
 </head>
-
 <body>
-  <h1>Demo</h1>
+  <h1>harper.js</h1>
 
-  <p>
-    This page is a simple example of using <code>harper.js</code> on a plain HTML page with a CDN.
-    It isn't pretty, but it demonstrates the fundamentals of using Harper. Start typing in the
-    text box below to start getting suggestions right in your browser.
-  </p>
+  <textarea id="maininput" rows="10" style="width: 100%;">There are some cases where the the standard grammar
+checkers don't cut it. That s where Harper comes in handy.
 
-  <!--This is an intentional mistake to highlight the technology.-->
-  <textarea id="maininput">This is an test</textarea>
+Harper is an language checker for developers. it can detect
+improper capitalization and misspellled words,
+as well as a number of other issues.
+Like if you break up words you shoul dn't.
+Harper can be a lifesaver when writing technical documents, 
+emails or other formal forms of communication.
 
-  <h2>Errors</h2>
+Harper works everywhere, even offline. Since your data
+never leaves your device, you don't need to worry aout us
+selling it or using it to train large language models, 
+despite of the consequences.
 
-  <ul id="errorlist">
-    Loading...
-  </ul>
+The best part: Harper can give you feedback instantly.
+For most documents, Harper can serve up suggestions in
+under 10 ms.</textarea>
+
+  <h2>Errors</h2>
+  <ul id="errorlist">
+    <li>Loading...</li>
+  </ul>
 </body>
-
 </html>
+

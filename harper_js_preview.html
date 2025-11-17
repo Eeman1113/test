@@ -6,7 +6,7 @@
 
   <style>
     body { font-family: sans-serif; }
-    mark.err { background: #ffcccc; border-bottom: 2px solid #c94a4a; padding: 0 2px; color: inherit; display: inline; }
+    mark.err { background: #ffcccc; border-bottom: 2px solid #c94a4a; padding: 0 2px; color: black; display: inline; }
     .editor-wrapper { position: relative; width: 100%; min-height: 200px; margin-bottom: 2rem; }
     .highlight-layer {
       position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -43,6 +43,7 @@
     };
 
     let linter = new WorkerLinter(harperConfig);
+    let currentLints = [];
 
     function applyHighlights(text, lints) {
       let html = "";
@@ -54,7 +55,7 @@
         const end = sp.end;
 
         html += escapeHTML(text.slice(lastIndex, start));
-        html += `<mark class="err">${escapeHTML(text.slice(start, end))}</mark>`;
+        html += `<mark class="err" data-start="${start}" data-end="${end}">${escapeHTML(text.slice(start, end))}</mark>`;
         lastIndex = end;
       }
 
@@ -69,70 +70,150 @@
     }
 
     async function onInput(e) {
-      const textToLint = e.target.value.replace(/\u00A0/g, " ");
+      const textarea = document.getElementById('maininput');
+      const textToLint = textarea.value.replace(/\u00A0/g, " ");
       let lints = await linter.lint(textToLint);
+      currentLints = lints;
 
       document.getElementById("highlight").innerHTML = applyHighlights(textToLint, lints);
 
       let list = document.getElementById("problemsList");
       list.innerHTML = "";
 
-      for (let lint of lints) {
+      const colorMap = { SpellCheck:'#f4c542', RepeatedWords:'#4CAF50', SentenceCapitalization:'#42a5f5', Matcher:'#ef5350', Spaces:'#ab47bc', AnA:'#26a69a' };
+
+      lints.forEach((lint, idx) => {
         const sp = lint.span();
         const bad = textToLint.substring(sp.start, sp.end);
 
-        let li = document.createElement("li");
-
-        let badSpan = document.createElement("span");
-        badSpan.className = "error-text";
-        badSpan.textContent = `"${bad}"`;
-        li.appendChild(badSpan);
-
-        let msgSpan = document.createElement("span");
-        msgSpan.className = "error-message";
-        msgSpan.textContent = ` — ${lint.message()}`;
-        li.appendChild(msgSpan);
-
-        if (lint.suggestion_count() > 0) {
-          const suggestions = [...lint.suggestions()]
-            .map(s => `‘${s.get_replacement_text()}’`)
-            .join(", ");
-
-          let sugSpan = document.createElement("span");
-          sugSpan.className = "error-suggestion";
-          sugSpan.textContent = ` Suggestion(s): ${suggestions}`;
-          li.appendChild(sugSpan);
-        }
-
-        
         const card = document.createElement("div");
-        card.style.border = "1px solid #ddd";
-        card.style.borderRadius = "10px";
-        card.style.padding = "12px";
+        card.className = "problem-card";
+        card.style.border = "1px solid #e5e5e5";
+        card.style.borderRadius = "12px";
+        card.style.padding = "16px";
         card.style.background = "#fff";
-        card.style.boxShadow = "0 1px 2px rgba(0,0,0,0.05)";
-        card.style.display = "flex";
-        card.style.flexDirection = "column";
+        card.style.boxShadow = "0 1px 3px rgba(0,0,0,0.08)";
+        const barColor = colorMap[lint.linter_name()] || '#f4c542';
         card.innerHTML = `
-          <div style='font-weight:600; margin-bottom:6px;'>${lint.linter_name()}</div>
-          <div style='font-size:14px; color:#444;'>${lint.message()}</div>
-          <div style='margin-top:8px; font-size:13px; color:#888;'>${escapeHTML(bad)}</div>
+          <div style='display:flex; justify-content:space-between; align-items:center;'>
+            <div style='font-weight:600; font-size:15px; display:flex; align-items:center; gap:8px;'>
+              <div style="width:6px; height:16px; border-radius:4px; background:${barColor};"></div>
+              ${lint.linter_name()}
+            </div>
+            <button class='apply-fix' data-idx='${idx}' style='background:#2DA44E; color:#fff; border:none; border-radius:6px; padding:6px 10px; cursor:pointer; font-size:12px;'>Apply fix</button>
+          </div>
+          <div style='margin-top:8px; font-size:14px; color:#444;'>${escapeHTML(lint.message())}</div>
+          <div style='margin-top:10px; background:#f9f9f9; padding:10px; border-radius:8px; font-size:13px; word-break:break-word;'>${escapeHTML(bad)}</div>
         `;
+        card.dataset.start = sp.start;
+        card.dataset.end = sp.end;
         list.appendChild(card);
+
+        // click card → select range in textarea and show tooltip
+        card.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          const ta = document.getElementById('maininput');
+          ta.focus();
+          ta.selectionStart = sp.start;
+          ta.selectionEnd = sp.end;
+
+          // scroll to approx line
+          const before = ta.value.slice(0, sp.start);
+          const line = before.split('\n').length - 1;
+          const lh = parseFloat(getComputedStyle(ta).lineHeight) || (parseFloat(getComputedStyle(ta).fontSize) * 1.6);
+          ta.scrollTop = Math.max(0, (line * lh) - 40);
+
+          showTooltipForLint(sp.start, sp.end, lint);
+        });
+
+        // apply-fix button
+        const applyBtn = card.querySelector('.apply-fix');
+        applyBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          if (lint.suggestion_count() > 0) {
+            const first = lint.suggestions().next().value;
+            const replacement = first.get_replacement_text();
+            applyReplacement(sp.start, sp.end, replacement);
+          }
+        });
+      });
+    }
+
+    function applyReplacement(start, end, replacement) {
+      const ta = document.getElementById('maininput');
+      const v = ta.value;
+      ta.value = v.slice(0, start) + replacement + v.slice(end);
+      autoResize();
+      // re-run lint
+      onInput({ target: ta });
+    }
+
+    function showTooltipForLint(start, end, lint) {
+      const tooltip = document.getElementById('lintTooltip');
+      const editorRect = document.querySelector('.editor-wrapper').getBoundingClientRect();
+
+      // find approximate position by measuring text before start in a mirror div
+      const mirror = document.createElement('div');
+      const ta = document.getElementById('maininput');
+      const style = getComputedStyle(ta);
+      mirror.style.position = 'absolute';
+      mirror.style.visibility = 'hidden';
+      mirror.style.whiteSpace = 'pre-wrap';
+      mirror.style.font = style.font;
+      mirror.style.lineHeight = style.lineHeight;
+      mirror.style.width = ta.clientWidth + 'px';
+      mirror.textContent = ta.value.slice(0, start);
+      document.body.appendChild(mirror);
+      const mirrorRect = mirror.getBoundingClientRect();
+      document.body.removeChild(mirror);
+
+      const top = editorRect.top + (mirrorRect.height);
+      const left = editorRect.left + editorRect.width - 280; // position near right edge of editor
+
+      tooltip.style.top = (top + window.scrollY) + 'px';
+      tooltip.style.left = (left + window.scrollX) + 'px';
+      tooltip.innerHTML = `
+        <div style='font-weight:600; margin-bottom:6px;'>${lint.linter_name()}</div>
+        <div style='font-size:13px; margin-bottom:8px;'>${escapeHTML(lint.message())}</div>
+        ${lint.suggestion_count() > 0 ? `<div style='display:flex; gap:8px; justify-content:flex-end;'><button id='tooltipApply' style='background:#2DA44E;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;'>Apply</button></div>` : ''}
+      `;
+      tooltip.style.display = 'block';
+
+      const btn = document.getElementById('tooltipApply');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const first = lint.suggestions().next().value;
+          const replacement = first.get_replacement_text();
+          applyReplacement(start, end, replacement);
+          tooltip.style.display = 'none';
+        });
       }
+
+      // hide on outside click
+      setTimeout(() => {
+        document.addEventListener('click', hideTooltipOnce, { once: true });
+      }, 0);
+
+      function hideTooltipOnce() { document.getElementById('lintTooltip').style.display = 'none'; }
     }
 
     function autoResize() {
-      const input = inputField;
-      const ghost = highlight;
+      const input = document.getElementById("maininput");
+      const ghost = document.getElementById("highlight");
+      if (!input) return;
       input.style.height = "auto";
       input.style.height = input.scrollHeight + "px";
-      ghost.style.height = input.scrollHeight + "px";
+      if (ghost) ghost.style.height = input.scrollHeight + "px";
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       const inputField = document.getElementById("maininput");
       const highlight = document.getElementById("highlight");
+
+      // seed textarea with sample content if empty
+      if (!inputField.value.trim()) {
+        inputField.value = `There are some cases where the the standard grammar\ncheckers don't cut it. That;s where Harper comes in handy.\n\nHarper is an language checker for developers. It can detect improper capitalization and misspellled words, as well as a number of other issues. Like if you break up words you shoul dn't. Harper can be an lifesaver when writing technical documents, emails or other formal forms of communication.\n\nHarper works everywhere, even when you're not online. Since your data never leaves your device, you don't ned too worry aout us selling it or using it to train large language models.\n\nThe best part: Harper can give you feedback instantly. For most documents, Harper can serve up suggestions in under 10 ms, faster that Grammarly.`;
+      }
 
       function debounce(fn, delay) {
         let timer;
@@ -151,6 +232,7 @@
         highlight.scrollLeft = inputField.scrollLeft;
       });
 
+      autoResize();
       onInput({ target: inputField });
     });
   </script>

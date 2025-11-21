@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT: OMEGA // DEITY EDITION</title>
+    <style>
+        :root {
+            --bg: #000000;
+            --term: #00ffcc;
+            --warn: #ff0055;
+            --ui-bg: rgba(0, 5, 5, 0.7);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg);
+            font-family: 'Rajdhani', 'Consolas', monospace; /* Requires Google Font or fallback */
+            color: var(--term);
+            user-select: none;
+        }
+
+        /* LAYERS */
+        #bgCanvas, #simCanvas, #fxCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: block;
+        }
+        
+        #bgCanvas { z-index: 0; filter: blur(2px) brightness(0.7); }
+        #simCanvas { z-index: 1; }
+        #fxCanvas { z-index: 2; pointer-events: none; mix-blend-mode: screen; }
+
+        /* UI LAYER */
+        #ui-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        #hud-top {
+            position: absolute;
+            top: 20px; left: 20px;
+            background: var(--ui-bg);
+            border-left: 2px solid var(--term);
+            padding: 15px;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.1);
+            border-radius: 0 10px 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        #hud-top:hover {
+            border-left: 2px solid #fff;
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+        }
+
+        h1 {
+            font-size: 16px; margin: 0 0 10px 0; letter-spacing: 4px; color: #fff;
+            text-shadow: 0 0 10px var(--term); text-transform: uppercase;
+        }
+
+        .stat {
+            font-size: 11px; margin-bottom: 4px; display: flex; justify-content: space-between;
+            width: 220px; color: #888; font-weight: 300;
+        }
+        .stat span { color: var(--term); font-weight: 700; }
+
+        .controls {
+            margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+        }
+
+        button {
+            background: rgba(0, 255, 204, 0.05);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            color: var(--term);
+            padding: 8px;
+            font-size: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        button:hover { background: var(--term); color: #000; box-shadow: 0 0 15px var(--term); }
+        button.danger { border-color: var(--warn); color: var(--warn); background: rgba(255, 0, 85, 0.05); }
+        button.danger:hover { background: var(--warn); color: #fff; box-shadow: 0 0 20px var(--warn); }
+
+        #notifications {
+            position: absolute; bottom: 30px; left: 30px;
+            display: flex; flex-direction: column-reverse; gap: 8px;
+        }
+        .msg {
+            background: rgba(0,0,0,0.8); border-left: 3px solid var(--term);
+            padding: 8px 12px; font-size: 12px; color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* VIGNETTE & CRT */
+        .overlay {
+            position: absolute; inset: 0; pointer-events: none; z-index: 9;
+            background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.8) 100%);
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+        }
+        .scanlines {
+            position: absolute; inset: 0; pointer-events: none; z-index: 9;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            opacity: 0.15;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <canvas id="bgCanvas"></canvas>
+    <canvas id="simCanvas"></canvas>
+    <canvas id="fxCanvas"></canvas>
+    
+    <div class="overlay"></div>
+    <div class="scanlines"></div>
+
+    <div id="ui-layer">
+        <div id="hud-top">
+            <h1>// SYSTEM_DEITY</h1>
+            <div class="stat">ENTITIES: <span id="s-count">0</span></div>
+            <div class="stat">HIGHEST MASS: <span id="s-mass">0</span></div>
+            <div class="stat">SIMULATION SPEED: <span id="s-time">1.0x</span></div>
+            <div class="stat">FRAMERATE: <span id="s-fps">0</span></div>
+            
+            <div class="controls">
+                <button onclick="sim.reset()">GENESIS REBOOT</button>
+                <button onclick="sim.injectDust()">INJECT MATTER</button>
+                <button onclick="sim.toggleTrails()">ORBITAL TRAILS</button>
+                <button onclick="sim.togglePause()">FREEZE TIME</button>
+                <button class="danger" style="grid-column: span 2" onclick="sim.supernova()">TRIGGER SUPERNOVA</button>
+            </div>
+        </div>
+        <div id="notifications"></div>
+    </div>
+
+<script>
+/**
+ * PROJECT OMEGA: DEITY EDITION
+ * Optimized High-Fidelity Accretion Simulator
+ */
+
+// --- CONFIGURATION ---
+const CFG = {
+    G: 0.65,
+    SOFTENING: 4,
+    DT_BASE: 0.7,
+    MAX_PARTICLES: 3500, // Reduced slightly to allow budget for FX
+    GRID_SIZE: 80,
+    TRAIL_LENGTH: 30,
+    COLORS: {
+        dust: ['#ffffff', '#dbeeff', '#eef5ff'],
+        rock: ['#5a4d41', '#6e5a4b', '#8c7b70', '#3d3632'],
+        // Sophisticated gas giant palettes
+        gas:  [
+            { base: '#2b4f6e', detail: '#4f97a3' }, // Neptune-like
+            { base: '#8a508f', detail: '#d16464' }, // Purple/Red
+            { base: '#a88532', detail: '#d6c278' }, // Saturn/Jupiter
+            { base: '#1a4036', detail: '#42f5ad' }  // Toxic Green
+        ],
+        star: {
+            warm: '#ffaa00',
+            hot: '#ffffff',
+            neutron: '#aaddff'
+        }
+    }
+};
+
+// --- SYSTEM SETUP ---
+const cvs = {
+    bg: document.getElementById('bgCanvas'),
+    sim: document.getElementById('simCanvas'),
+    fx: document.getElementById('fxCanvas')
+};
+const ctx = {
+    bg: cvs.bg.getContext('2d', { alpha: false }),
+    sim: cvs.sim.getContext('2d', { alpha: true }),
+    fx: cvs.fx.getContext('2d', { alpha: true })
+};
+
+let width, height;
+
+// --- AUDIO ENGINE ---
+const Audio = {
+    ctx: new (window.AudioContext || window.webkitAudioContext)(),
+    masterGain: null,
+    init: function() {
+        if(this.masterGain) return;
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.value = 0.3;
+        this.masterGain.connect(this.ctx.destination);
+    },
+    playTone: function(freq, type, duration, vol = 1) {
+        if(this.ctx.state === 'suspended') this.ctx.resume();
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        // Envelope
+        gain.gain.setValueAtTime(0, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(vol, this.ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    },
+    boom: function(mass) {
+        const freq = Math.max(40, 250 - (mass/5));
+        this.playTone(freq, 'sawtooth', 0.4, Math.min(1, mass/20));
+        this.playTone(freq * 0.5, 'sine', 0.6, Math.min(1, mass/20)); // Sub bass
+    }
+};
+
+// --- MATH UTILS ---
+const rnd = (min, max) => Math.random() * (max - min) + min;
+const notif = (msg) => {
+    const el = document.createElement('div');
+    el.className = 'msg';
+    el.innerText = `>> ${msg}`;
+    document.getElementById('notifications').appendChild(el);
+    setTimeout(() => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(-20px)';
+        setTimeout(() => el.remove(), 500);
+    }, 3500);
+};
+
+class Vector {
+    constructor(x, y) { this.x = x; this.y = y; }
+}
+
+// --- BACKGROUND GENERATOR (Procedural Nebula) ---
+function generateCosmos(w, h) {
+    const c = ctx.bg;
+    c.fillStyle = '#010103';
+    c.fillRect(0, 0, w, h);
+
+    // 1. Nebulae Clouds
+    c.globalCompositeOperation = 'screen';
+    for(let i=0; i<30; i++) {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        const r = rnd(100, 600);
+        const hue = rnd(200, 320); // Blue to Purple to Pink
+        const grad = c.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, `hsla(${hue}, 60%, 50%, 0.04)`);
+        grad.addColorStop(1, 'transparent');
+        c.fillStyle = grad;
+        c.beginPath(); c.arc(x, y, r, 0, Math.PI*2); c.fill();
+    }
+
+    // 2. Deep Stars
+    c.globalCompositeOperation = 'source-over';
+    c.fillStyle = '#FFF';
+    for(let i=0; i<800; i++) {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        const s = Math.random() * 1.5;
+        const alpha = Math.random();
+        c.globalAlpha = alpha * 0.8;
+        c.beginPath(); c.arc(x, y, s * 0.5, 0, Math.PI*2); c.fill();
+    }
+    c.globalAlpha = 1.0;
+}
+
+// --- PARTICLE FX SYSTEM ---
+class Debris {
+    constructor(x, y, color, velocity) {
+        this.x = x; this.y = y;
+        this.color = color;
+        this.vx = velocity.x * rnd(0.5, 2) + rnd(-2, 2);
+        this.vy = velocity.y * rnd(0.5, 2) + rnd(-2, 2);
+        this.life = 1.0;
+        this.decay = rnd(0.02, 0.05);
+        this.size = rnd(0.5, 2);
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+    }
+    draw(c, cam, w, h) {
+        if(this.life <= 0) return;
+        const sx = (this.x - cam.x) * cam.zoom + w/2;
+        const sy = (this.y - cam.y) * cam.zoom + h/2;
+        c.globalAlpha = this.life;
+        c.fillStyle = this.color;
+        c.fillRect(sx, sy, this.size * cam.zoom, this.size * cam.zoom);
+        c.globalAlpha = 1.0;
+    }
+}
+
+// --- CELESTIAL BODY ---
+class Body {
+    constructor(x, y, mass, vx, vy) {
+        this.pos = new Vector(x, y);
+        this.vel = new Vector(vx, vy);
+        this.mass = mass;
+        this.radius = this.calcRadius();
+        this.type = this.classify();
+        this.colorObj = this.generateColor(); // Store full object for gradients
+        this.color = typeof this.colorObj === 'string' ? this.colorObj : this.colorObj.base;
+        this.history = []; 
+        this.dead = false;
+        this.pulsePhase = Math.random() * Math.PI; // For star breathing
+    }
+
+    calcRadius() {
+        if (this.mass > 800) return Math.sqrt(this.mass) * 0.6; 
+        if (this.mass > 50) return Math.sqrt(this.mass) * 0.8;
+        return Math.sqrt(this.mass); 
+    }
+
+    classify() {
+        if (this.mass < 5) return 'dust';
+        if (this.mass < 80) return 'rock';
+        if (this.mass < 600) return 'gas';
+        return 'star';
+    }
+
+    generateColor() {
+        if (this.type === 'dust') return CFG.COLORS.dust[Math.floor(Math.random() * CFG.COLORS.dust.length)];
+        if (this.type === 'rock') return CFG.COLORS.rock[Math.floor(Math.random() * CFG.COLORS.rock.length)];
+        if (this.type === 'gas') return CFG.COLORS.gas[Math.floor(Math.random() * CFG.COLORS.gas.length)]; // Returns Object
+        
+        // Star
+        if (this.mass > 2000) return CFG.COLORS.star.neutron;
+        if (this.mass > 1200) return CFG.COLORS.star.hot;
+        return CFG.COLORS.star.warm; 
+    }
+
+    update(dt, time) {
+        this.pos.x += this.vel.x * dt;
+        this.pos.y += this.vel.y * dt;
+
+        // Star breathing effect
+        if (this.type === 'star') {
+            this.pulsePhase += 0.05;
+        }
+
+        // Trails (Optimized: skip frames)
+        if (this.mass > 10 && sim.showTrails) {
+            if (sim.frame % 4 === 0) { 
+                this.history.push({x: this.pos.x, y: this.pos.y});
+                if (this.history.length > CFG.TRAIL_LENGTH) this.history.shift();
+            }
+        }
+    }
+
+    draw(c, cam, w, h, domStar) {
+        const sx = (this.pos.x - cam.x) * cam.zoom + w/2;
+        const sy = (this.pos.y - cam.y) * cam.zoom + h/2;
+        let r = this.radius * cam.zoom;
+        if (r < 0.5) r = 0.5; // Min visibility
+
+        // Cull offscreen
+        if (sx < -r || sx > w + r || sy < -r || sy > h + r) return;
+
+        // 1. Trails
+        if (this.history.length > 1 && sim.showTrails) {
+            c.beginPath();
+            const baseCol = this.type === 'gas' ? this.colorObj.base : this.color;
+            c.strokeStyle = this.type === 'star' ? baseCol : `rgba(255,255,255,0.1)`;
+            c.lineWidth = Math.max(1, r * 0.2);
+            
+            // Draw path
+            const h0x = (this.history[0].x - cam.x) * cam.zoom + w/2;
+            const h0y = (this.history[0].y - cam.y) * cam.zoom + h/2;
+            c.moveTo(h0x, h0y);
+            for(let i=1; i<this.history.length; i++) {
+                const hx = (this.history[i].x - cam.x) * cam.zoom + w/2;
+                const hy = (this.history[i].y - cam.y) * cam.zoom + h/2;
+                c.lineTo(hx, hy);
+            }
+            c.lineTo(sx, sy);
+            c.stroke();
+        }
+
+        // 2. Body Rendering
+        c.beginPath();
+
+        if (this.type === 'star') {
+            // Star Pulse
+            const pulse = Math.sin(this.pulsePhase) * 0.1 + 1;
+            
+            // Corona (Bloom)
+            const grad = c.createRadialGradient(sx, sy, r*0.8, sx, sy, r * 6 * pulse);
+            grad.addColorStop(0, this.color);
+            grad.addColorStop(0.2, this.color); // Solid core
+            grad.addColorStop(0.5, 'rgba(255, 100, 0, 0.2)');
+            grad.addColorStop(1, 'transparent');
+            
+            c.fillStyle = grad;
+            c.globalCompositeOperation = 'screen'; // Make it glow
+            c.beginPath(); c.arc(sx, sy, r * 6 * pulse, 0, Math.PI*2); c.fill();
+            c.globalCompositeOperation = 'source-over'; // Reset
+
+            // Core
+            c.fillStyle = '#fff';
+            c.beginPath(); c.arc(sx, sy, r, 0, Math.PI*2); c.fill();
+
+        } else if (this.type === 'gas') {
+            // Gas Giant (Stripes/Gradient)
+            const lightAngle = domStar ? Math.atan2(domStar.pos.y - this.pos.y, domStar.pos.x - this.pos.x) : -Math.PI/4;
+            
+            // Atmosphere glow
+            c.fillStyle = this.colorObj.detail;
+            c.globalAlpha = 0.2;
+            c.beginPath(); c.arc(sx, sy, r * 1.3, 0, Math.PI*2); c.fill();
+            c.globalAlpha = 1.0;
+
+            // Body with 3D shading
+            const offX = Math.cos(lightAngle) * (r * 0.5);
+            const offY = Math.sin(lightAngle) * (r * 0.5);
+            const grad = c.createRadialGradient(sx + offX, sy + offY, 0, sx, sy, r);
+            grad.addColorStop(0, this.colorObj.detail);
+            grad.addColorStop(0.5, this.colorObj.base);
+            grad.addColorStop(1, '#05050a'); // Shadow side
+            
+            c.fillStyle = grad;
+            c.beginPath(); c.arc(sx, sy, r, 0, Math.PI*2); c.fill();
+
+        } else if (this.type === 'rock') {
+            // Rocky planet (Hard shadow)
+            const lightAngle = domStar ? Math.atan2(domStar.pos.y - this.pos.y, domStar.pos.x - this.pos.x) : -Math.PI/4;
+            const offX = Math.cos(lightAngle) * (r * 0.4);
+            const offY = Math.sin(lightAngle) * (r * 0.4);
+            
+            const grad = c.createRadialGradient(sx + offX, sy + offY, 0, sx, sy, r);
+            grad.addColorStop(0, this.color);
+            grad.addColorStop(1, '#000');
+            
+            c.fillStyle = grad;
+            c.beginPath(); c.arc(sx, sy, r, 0, Math.PI*2); c.fill();
+            
+        } else {
+            // Dust (Simple)
+            c.fillStyle = this.color;
+            // Twinkle
+            if(Math.random() > 0.9) c.globalAlpha = 0.5;
+            c.beginPath(); c.arc(sx, sy, r, 0, Math.PI*2); c.fill();
+            c.globalAlpha = 1.0;
+        }
+    }
+}
+
+// --- SIMULATION CORE ---
+class Simulation {
+    constructor() {
+        this.bodies = [];
+        this.debris = [];
+        this.grid = new Map();
+        this.frame = 0;
+        this.paused = false;
+        this.showTrails = true;
+        this.cam = { x: 0, y: 0, zoom: 0.2, targetZoom: 0.2 };
+        this.shake = 0; // Screen shake intensity
+        this.drag = { active: false, startX: 0, startY: 0, camX: 0, camY: 0 };
+        
+        this.lastTime = performance.now();
+        this.fps = 0;
+
+        this.setupInputs();
+        this.reset();
+    }
+
+    setupInputs() {
+        const handleResize = () => {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            Object.values(cvs).forEach(c => { c.width = width; c.height = height; });
+            generateCosmos(width, height); // Regenerate background
+        };
+        window.addEventListener('resize', handleResize);
+        handleResize();
+
+        cvs.fx.addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            this.cam.targetZoom *= delta;
+        });
+
+        cvs.fx.addEventListener('mousedown', e => {
+            this.drag.active = true;
+            this.drag.startX = e.clientX;
+            this.drag.startY = e.clientY;
+            this.drag.camX = this.cam.x;
+            this.drag.camY = this.cam.y;
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (this.drag.active) {
+                const dx = (e.clientX - this.drag.startX) / this.cam.zoom;
+                const dy = (e.clientY - this.drag.startY) / this.cam.zoom;
+                this.cam.x = this.drag.camX - dx;
+                this.cam.y = this.drag.camY - dy;
+            }
+        });
+
+        window.addEventListener('mouseup', () => this.drag.active = false);
+    }
+
+    reset() {
+        this.bodies = [];
+        this.debris = [];
+        this.cam.x = 0; this.cam.y = 0;
+        
+        // Genesis Star
+        const sun = new Body(0, 0, 2500, 0, 0);
+        sun.type = 'star';
+        sun.colorObj = CFG.COLORS.star.warm;
+        this.bodies.push(sun);
+
+        this.injectDust(2500, 400, 3500); 
+        
+        notif("GENESIS INITIATED. WELCOME, ARCHITECT.");
+    }
+
+    injectDust(count, minR, maxR) {
+        const sun = this.bodies.find(b => b.type === 'star') || this.bodies[0];
+        
+        for (let i = 0; i < count; i++) {
+            if (this.bodies.length >= CFG.MAX_PARTICLES) break;
+            const angle = Math.random() * Math.PI * 2;
+            const dist = rnd(minR, maxR);
+            const v = Math.sqrt(CFG.G * sun.mass / dist);
+            const variation = rnd(0.8, 1.2);
+            
+            this.bodies.push(new Body(
+                sun.pos.x + Math.cos(angle) * dist, 
+                sun.pos.y + Math.sin(angle) * dist, 
+                rnd(0.5, 4), // Mass
+                Math.cos(angle + Math.PI/2) * v * variation,
+                Math.sin(angle + Math.PI/2) * v * variation
+            ));
+        }
+    }
+
+    supernova() {
+        const sun = this.bodies.reduce((prev, current) => (prev.mass > current.mass) ? prev : current);
+        sun.mass /= 10;
+        this.shake = 50;
+        
+        this.bodies.forEach(b => {
+            if (b === sun) return;
+            const dx = b.pos.x - sun.pos.x;
+            const dy = b.pos.y - sun.pos.y;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const angle = Math.atan2(dy, dx);
+            const force = 100000 / (dist + 100); 
+            b.vel.x += Math.cos(angle) * force;
+            b.vel.y += Math.sin(angle) * force;
+        });
+        
+        // Visual Flash
+        const fxc = ctx.fx;
+        fxc.fillStyle = '#FFF';
+        fxc.fillRect(0,0,width,height);
+        Audio.boom(800);
+        notif("CRITICAL FAILURE: CORE COLLAPSE");
+    }
+
+    togglePause() { this.paused = !this.paused; }
+    toggleTrails() { this.showTrails = !this.showTrails; }
+
+    physics(dt) {
+        this.grid.clear();
+        const cellSize = CFG.GRID_SIZE;
+
+        // 1. Spatial Hashing
+        for (const b of this.bodies) {
+            const k = `${Math.floor(b.pos.x/cellSize)},${Math.floor(b.pos.y/cellSize)}`;
+            if (!this.grid.has(k)) this.grid.set(k, []);
+            this.grid.get(k).push(b);
+        }
+
+        // 2. Collisions & Local Gravity
+        for (const b1 of this.bodies) {
+            const gx = Math.floor(b1.pos.x/cellSize);
+            const gy = Math.floor(b1.pos.y/cellSize);
+
+            for (let x = -1; x <= 1; x++) {
+                for (let y = -1; y <= 1; y++) {
+                    const cell = this.grid.get(`${gx+x},${gy+y}`);
+                    if (!cell) continue;
+
+                    for (const b2 of cell) {
+                        if (b1 === b2 || b2.dead || b1.dead) continue;
+
+                        const dx = b2.pos.x - b1.pos.x;
+                        const dy = b2.pos.y - b1.pos.y;
+                        const distSq = dx*dx + dy*dy;
+                        const rSum = b1.radius + b2.radius;
+
+                        // Collision (Accretion)
+                        if (distSq < rSum * rSum * 1.2) { 
+                            let big = b1.mass >= b2.mass ? b1 : b2;
+                            let small = b1.mass >= b2.mass ? b2 : b1;
+
+                            // Momentum Transfer
+                            const totalM = big.mass + small.mass;
+                            big.vel.x = (big.vel.x*big.mass + small.vel.x*small.mass) / totalM;
+                            big.vel.y = (big.vel.y*big.mass + small.vel.y*small.mass) / totalM;
+                            big.pos.x = (big.pos.x*big.mass + small.pos.x*small.mass) / totalM;
+                            big.pos.y = (big.pos.y*big.mass + small.pos.y*small.mass) / totalM;
+
+                            big.mass += small.mass;
+                            big.radius = big.calcRadius();
+                            big.type = big.classify();
+                            big.colorObj = big.generateColor(); // Update visuals
+                            big.color = typeof big.colorObj === 'string' ? big.colorObj : big.colorObj.base;
+                            
+                            small.dead = true;
+
+                            // FX
+                            if (small.mass > 5) {
+                                this.shake += Math.min(small.mass / 5, 10);
+                                Audio.boom(small.mass);
+                                // Debris Spatter
+                                for(let i=0; i<5; i++) {
+                                    this.debris.push(new Debris(big.pos.x, big.pos.y, small.color, small.vel));
+                                }
+                            }
+                            continue;
+                        }
+
+                        // Local Gravity Helper (Clustering)
+                        if (distSq < 5000) {
+                            const dist = Math.sqrt(distSq);
+                            const f = (CFG.G * 0.5 * b2.mass) / (distSq + 50); 
+                            b1.vel.x += (dx/dist)*f*dt;
+                            b1.vel.y += (dy/dist)*f*dt;
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Global Gravity (Attractors)
+        const attractors = this.bodies.filter(b => b.mass > 10);
+        for (const b of this.bodies) {
+            if (b.dead) continue;
+            for (const att of attractors) {
+                if (b === att) continue;
+                const dx = att.pos.x - b.pos.x;
+                const dy = att.pos.y - b.pos.y;
+                const distSq = dx*dx + dy*dy;
+                if (distSq > 30000000) continue; // Optimization cutoff
+
+                const dist = Math.sqrt(distSq);
+                const f = (CFG.G * att.mass) / (distSq + CFG.SOFTENING);
+                b.vel.x += (dx/dist)*f*dt;
+                b.vel.y += (dy/dist)*f*dt;
+            }
+        }
+
+        // Cleanup
+        this.bodies = this.bodies.filter(b => !b.dead);
+        for(const b of this.bodies) b.update(dt);
+
+        // Debris Update
+        this.debris.forEach(d => d.update());
+        this.debris = this.debris.filter(d => d.life > 0);
+    }
+
+    loop() {
+        const now = performance.now();
+        let dt = (now - this.lastTime) / 16.66;
+        if (dt > 4) dt = 4; // Cap lag
+        this.lastTime = now;
+        
+        if (this.frame % 10 === 0) this.fps = Math.round(1000 / ((now - (this.lastTime - 16)) || 1));
+        
+        // Camera Zoom
+        this.cam.zoom += (this.cam.targetZoom - this.cam.zoom) * 0.1;
+
+        // Screen Shake decay
+        let shakeX = 0, shakeY = 0;
+        if(this.shake > 0) {
+            shakeX = (Math.random() - 0.5) * this.shake;
+            shakeY = (Math.random() - 0.5) * this.shake;
+            this.shake *= 0.9;
+            if(this.shake < 0.5) this.shake = 0;
+        }
+
+        if (!this.paused) this.physics(CFG.DT_BASE * dt);
+
+        // RENDER
+        const c = ctx.sim;
+        const fx = ctx.fx;
+
+        // Clear
+        c.clearRect(0, 0, width, height);
+        fx.clearRect(0, 0, width, height);
+
+        // Apply Camera + Shake
+        c.save();
+        c.translate(shakeX, shakeY);
+
+        // Find Dominant Star
+        let maxMass = 0;
+        let domStar = null;
+        for(let b of this.bodies) {
+            if(b.mass > maxMass) { maxMass = b.mass; domStar = b; }
+        }
+
+        // Draw Bodies
+        for (const b of this.bodies) b.draw(c, this.cam, width, height, domStar);
+
+        // Draw FX (Debris)
+        for (const d of this.debris) d.draw(fx, this.cam, width, height);
+
+        c.restore();
+
+        // UI
+        if (this.frame % 10 === 0) {
+            document.getElementById('s-count').innerText = this.bodies.length;
+            document.getElementById('s-mass').innerText = Math.floor(maxMass);
+            document.getElementById('s-fps').innerText = this.fps;
+            document.getElementById('s-time').innerText = this.paused ? "PAUSED" : "1.0x";
+        }
+
+        this.frame++;
+        requestAnimationFrame(() => this.loop());
+    }
+}
+
+// START
+const sim = new Simulation();
+sim.loop();
+</script>
+</body>
+</html>

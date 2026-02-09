@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuscripts.ai — The All-in-One AI Writing Tool for Authors</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="The ultimate AI writing platform for authors and academics. Generate full books, research papers, and stories with auto-citations, structural editing, and human-like prose.">
+    <meta name="keywords" content="AI book writer, AI research paper generator, novel writing software, AI story generator, academic writing AI, auto citations, lore book, humanize AI text, manuscript editor">
+    <meta name="author" content="Manuscripts.ai">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="theme-color" content="#f97316">
+    <link rel="canonical" href="https://manuscripts.ai/">
+
+    <!-- Open Graph / Facebook (Social SEO) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://manuscripts.ai/">
+    <meta property="og:title" content="Manuscripts.ai — Write, Edit, Cite and Create">
+    <meta property="og:description" content="The complete AI writing platform for authors. From first draft to final manuscript—with citations, structure, and soul.">
+    <meta property="og:image" content="https://manuscripts.ai/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Manuscripts.ai">
+
+    <!-- Twitter Card (Social SEO) -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@manuscriptsai">
+    <meta name="twitter:creator" content="@manuscriptsai">
+    <meta name="twitter:url" content="https://manuscripts.ai/">
+    <meta name="twitter:title" content="Manuscripts.ai — The All-in-One AI for Every Author">
+    <meta name="twitter:description" content="The complete AI writing platform for authors. From first draft to final manuscript—with citations, structure, and soul.">
+    <meta name="twitter:image" content="https://manuscripts.ai/twitter-card.jpg">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <!-- JSON-LD Structured Data (Rich Snippets) -->
+    <script type="application/ld+json">
+    [
+        {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "Manuscripts.ai",
+            "applicationCategory": "ProductivityApplication",
+            "operatingSystem": "Web",
+            "offers": {
+                "@type": "Offer",
+                "price": "39.88",
+                "priceCurrency": "USD",
+                "availability": "https://schema.org/InStock"
+            },
+            "description": "The complete AI writing platform for authors, academics, and creators. From first draft to final manuscript—with citations, structure, and soul.",
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "ratingCount": "130000"
+            },
+            "featureList": "Full Paper Generation, Research Chat, Lore Book, Auto Citations, Data Visualization, Humanizer"
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Manuscripts.ai",
+            "url": "https://manuscripts.ai",
+            "logo": "https://manuscripts.ai/logo.png",
+            "sameAs": [
+                "https://twitter.com/manuscriptsai",
+                "https://www.linkedin.com/company/manuscripts-ai"
+            ]
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "How can I upload my own book to the platform?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Once you create a document, you can find an option in the editor called 'Import File'. You can upload files with extensions .TXT, .DOCX, and .RTF to bring your existing work into the platform."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What is an AI Book Writer?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "An AI Book Writer is an intelligent writing assistant designed to help you brainstorm, plan, and write full-length books faster. It acts as a creative co-author, helping with everything from sorting raw ideas in the Braindump tool to maintaining world-building consistency with the Lore Book."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What are Tokens and how do they work?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Language model tokens can be thought of as pieces of words. Before processing prompts, input text is split into tokens. Roughly, 1,000 tokens is about 750 words. You can purchase extra tokens if you need more than your plan's monthly allowance."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How do I create graphs using the platform?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "To generate a graph, simply select the relevant data or content in your document and click the graph icon button. The tool will analyze your content and automatically visualize it as a Bar, Column, Pie, Line graph, or Heatmap."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Can I add citations to my document?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes! The 'Citations' tool simplifies APA, MLA, Chicago, and Harvard styles. It allows you to manage and create citations in one location, searching an extensive list of sources and ensuring your references are formatted to the correct standards."
+                    }
+                }
+            ]
+        }
+    ]
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            700: '#c2410c',
+                            900: '#7c2d12',
+                        },
+                        dark: {
+                            bg: '#ffffff',
+                            card: '#fafafa',
+                            border: '#e5e5e5',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+        }
+        
+        .dark .glass-morphism {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+        }
+        
+        .text-scramble {
+            font-family: 'Space Grotesk', monospace;
+        }
+        
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -15px rgba(249, 115, 22, 0.2);
+        }
+        
+        .dark .hover-lift:hover {
+            box-shadow: 0 20px 40px -15px rgba(249, 115, 22, 0.15);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #f97316;
+            border-radius: 4px;
+        }
+        
+        .dark ::-webkit-scrollbar-thumb {
+            background: #ea580c;
+        }
+        
+        .cursor-glow {
+            pointer-events: none;
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, transparent, rgba(249, 115, 22, 0.3), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+        
+        .dark .feature-card::before {
+            background: linear-gradient(135deg, transparent, rgba(249, 115, 22, 0.5), transparent);
+        }
+
+        /* FAQ Accordion Styles */
+        .faq-item {
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .faq-button {
+            width: 100%;
+            text-align: left;
+            padding: 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: #111827;
+        }
+        .faq-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            color: #4b5563;
+        }
+        .faq-item.active .faq-content {
+            max-height: 500px; /* Arbitrary large height */
+            padding-bottom: 1.5rem;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Masonry Grid for Wall of Love */
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 1.5rem;
+        }
+        @media (min-width: 640px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+        @media (min-width: 1024px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+        .review-card {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Avatar colors for Wall of Love */
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+        .avatar-yellow { background-color: #F59E0B; }
+        .avatar-purple { background-color: #8B5CF6; }
+        .avatar-blue { background-color: #3B82F6; }
+        .avatar-green { background-color: #10B981; }
+        .avatar-red { background-color: #EF4444; }
+        .avatar-orange { background-color: #F97316; }
+        .avatar-teal { background-color: #14B8A6; }
+        .avatar-pink { background-color: #EC4899; }
+        .avatar-indigo { background-color: #6366F1; }
+    </style>
+<base target="_blank">
+</head>
+<body class="bg-white text-gray-900 transition-colors duration-300 overflow-x-hidden">
+    <!-- Cursor Glow Effect -->
+    <div id="cursor-glow" class="cursor-glow hidden lg:block"></div>
+    
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 top-0 transition-all duration-300" id="navbar">
+        <div class="glass-morphism border-b border-orange-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-20">
+                    <a href="#" class="block hover:opacity-80 transition-opacity" aria-label="Manuscripts.ai">
+                        <svg width="174" height="30" viewBox="0 0 174 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22.7485 21.4009H7.56707C6.92298 21.4009 6.396 20.8888 6.396 20.2629V3.41122C6.396 2.78535 6.92298 2.27328 7.56707 2.27328H22.7485C23.3926 2.27328 23.9196 2.78535 23.9196 3.41122V20.2604C23.9196 20.8888 23.3926 21.4009 22.7485 21.4009Z" fill="#FFAF00"/>
+                            <path d="M25.8383 10.9733V22.5698C25.8383 22.8155 25.6653 23.0172 25.4524 23.0172H4.86004C4.64712 23.0172 4.47412 22.8155 4.47412 22.5698V10.9733C4.47412 10.725 4.64446 10.5258 4.86004 10.5258H9.27554C11.8226 10.6836 14.0131 12.406 15.1575 14.881C16.302 12.4034 18.4924 10.6836 21.0395 10.5258H25.455C25.6653 10.5258 25.8383 10.725 25.8383 10.9733Z" fill="#FF7422"/>
+                            <path d="M9.9541 5.52673H20.5603" stroke="white" stroke-width="0.909231" stroke-miterlimit="10" stroke-linecap="round"/>
+                            <path d="M9.9541 8.19308H20.5603" stroke="white" stroke-width="0.909231" stroke-miterlimit="10" stroke-linecap="round"/>
+                            <path d="M23.9193 10.5258V19.2776C23.9193 19.681 23.5786 20.0121 23.1634 20.0121H7.14894C6.73374 20.0121 6.39307 19.681 6.39307 19.2776V10.5258H9.27551C11.8226 10.6836 14.0131 12.406 15.1575 14.881C16.302 12.4034 18.4924 10.6836 21.0395 10.5258H23.9193Z" fill="#FFAF00"/>
+                            <path d="M23.9193 10.5258V19.2776C23.9193 19.681 23.5786 20.0121 23.1634 20.0121H7.14894C6.73374 20.0121 6.39307 19.681 6.39307 19.2776V10.5258H9.27551C11.8226 10.6836 14.0131 12.406 15.1575 14.881C16.302 12.4034 18.4924 10.6836 21.0395 10.5258H23.9193Z" fill="#EF5D14"/>
+                            <path d="M32.958 21.1862L32.9766 5.95602L34.7412 5.95861L40.6472 18.0983L46.5505 5.97413L48.3364 5.97671L48.3177 21.1965L46.4786 21.194L46.4919 10.1095L41.1555 21.1991H40.1202L34.8104 10.0965L34.7971 21.1914L32.958 21.1862Z" fill="#051D33"/>
+                            <path d="M60.7925 14.1543L60.7845 21.2198L59.0651 21.2172L59.0678 19.4405C58.1309 20.837 56.6697 21.5327 54.7108 21.5301C52.0759 21.5276 50.7185 19.9603 50.7212 18.1189C50.7239 16.3215 51.8231 15.2741 53.609 14.7698C55.0781 14.3896 57.1488 14.1491 58.8895 13.9189C58.8362 12.1008 58.0324 11.2319 55.9964 11.2293C54.5698 11.2267 53.4253 11.8293 52.9995 13.2258L51.1604 12.6853C51.7193 10.6862 53.3641 9.47325 56.0203 9.47583C58.1442 9.47842 59.7411 10.2207 60.4145 11.7129C60.7419 12.4189 60.7951 13.2543 60.7925 14.1543ZM58.6659 17.325C58.8309 16.7741 58.8522 16.0448 58.8628 15.5276C57.2074 15.737 55.6184 15.9155 54.474 16.231C53.5052 16.5258 52.6455 17.0431 52.6428 18.1112C52.6428 19.0526 53.3268 19.9526 55.0036 19.9551C57.0956 19.9551 58.3811 18.7422 58.6659 17.325Z" fill="#051D33"/>
+                            <path d="M73.9538 14.9198L73.9458 21.2353L71.9869 21.2327L71.9949 15.5095C71.9976 13.3629 71.2923 11.2991 68.8117 11.2965C66.8635 11.294 65.5779 12.5612 65.5753 15.2069L65.5673 21.225L63.6084 21.2224L63.6217 9.79912L65.3624 9.80171L65.3597 11.2707C66.2327 10.1405 67.5821 9.50688 69.2801 9.50947C73.0675 9.51464 73.9565 12.7526 73.9538 14.9198Z" fill="#051D33"/>
+                            <path d="M84.9563 9.82498L86.9046 9.82757L86.8913 21.2508L85.1613 21.2483L85.1639 19.7793C84.291 20.9095 82.9416 21.5431 81.2435 21.5405C77.4561 21.5353 76.5672 18.2974 76.5698 16.1302L76.5778 9.81464L78.5367 9.81722L78.5287 15.5405C78.5261 17.687 79.2314 19.7508 81.7119 19.7534C83.6602 19.756 84.9457 18.4888 84.9484 15.8431L84.9563 9.82498Z" fill="#051D33"/>
+                            <path d="M89.292 18.1655L91.2722 17.8603C91.5862 19.1095 92.8052 19.8828 94.5033 19.8853C96.1029 19.8879 97.085 19.2 97.085 18.0802C97.085 17.1181 96.6405 16.8414 93.7687 16.0888C90.6574 15.2819 89.6673 14.4983 89.6699 12.8586C89.6726 10.8491 91.4824 9.51724 94.1919 9.52241C96.8694 9.525 98.8043 10.8621 99.0545 12.8716L97.0743 13.2181C96.88 12.0026 95.7915 11.25 94.1919 11.206C92.6668 11.1621 91.6208 11.7957 91.6208 12.7681C91.6208 13.6034 92.217 13.9655 94.9824 14.6457C98.0831 15.4216 99.0944 16.2698 99.0918 18.0362C99.0891 20.2474 97.3139 21.5767 94.3862 21.5741C91.5729 21.5612 89.6912 20.3121 89.292 18.1655Z" fill="#051D33"/>
+                            <path d="M100.846 15.556C100.883 11.9922 102.943 9.53016 106.48 9.53275C108.95 9.53533 110.866 10.8077 111.484 12.8586L109.568 13.4172C109.067 12.0957 107.883 11.3198 106.456 11.3198C104.04 11.3172 102.927 13.081 102.903 15.556C102.922 18.106 104.106 19.8 106.446 19.8026C107.971 19.8052 108.982 19.1069 109.517 17.806L111.476 18.3052C110.645 20.4414 108.87 21.5922 106.443 21.5896C102.863 21.5871 100.872 19.0552 100.846 15.556Z" fill="#051D33"/>
+                            <path d="M119.783 9.86638L119.78 11.6328C118.963 11.431 117.909 11.4828 117.092 12.0621C115.948 12.8534 115.663 14.1983 115.663 15.5509L115.655 21.2845L113.707 21.2819L113.72 9.85862L115.45 9.86121L115.447 11.669C115.708 11.2241 116.057 10.8336 116.451 10.5595C117.356 9.85345 118.74 9.64138 119.783 9.86638Z" fill="#051D33"/>
+                            <path d="M122.072 7.84912L122.074 5.9017L124.012 5.90429L124.009 7.8517L122.072 7.84912ZM122.056 21.2922L122.069 9.86894L124.007 9.87153L123.993 21.2948L122.056 21.2922Z" fill="#051D33"/>
+                            <path d="M137.935 15.5896C137.929 19.0164 135.946 21.6258 132.659 21.6233C131.201 21.6207 130.038 21.1138 129.199 20.2448L129.191 26.3793L127.243 26.3767L127.264 9.8767L128.994 9.87928L128.992 11.1595C129.854 10.156 131.084 9.56377 132.683 9.56635C135.949 9.56635 137.937 12.1603 137.935 15.5896ZM135.877 15.587C135.88 13.1741 134.773 11.2914 132.377 11.2888C130.08 11.2862 128.989 13.05 128.986 15.5793C128.984 18.0853 130.048 19.8957 132.42 19.8983C134.738 19.9008 135.875 18.0181 135.877 15.587Z" fill="#051D33"/>
+                            <path d="M143.351 11.4491L143.343 16.9164C143.343 17.8577 143.297 18.4914 143.58 18.9698C144.101 19.8801 145.278 19.9448 146.888 19.7043L146.885 21.3233C144.783 21.7345 142.619 21.4991 141.804 19.9422C141.339 19.0526 141.405 18.1862 141.405 17.0017L141.413 11.4491L139.028 11.4465L139.031 9.89222L141.416 9.8948L141.418 6.72153L143.356 6.72411L143.353 9.89739L146.901 9.90256L146.898 11.4569L143.351 11.4491Z" fill="#051D33"/>
+                            <path d="M148.634 18.2353L150.614 17.9302C150.928 19.1793 152.147 19.9526 153.845 19.9552C155.445 19.9578 156.427 19.2698 156.427 18.15C156.427 17.1879 155.982 16.9112 153.108 16.1586C149.996 15.3517 149.006 14.5681 149.009 12.9284C149.012 10.919 150.819 9.58707 153.531 9.59224C156.209 9.59483 158.143 10.9319 158.394 12.9414L156.411 13.2879C156.217 12.0724 155.128 11.3198 153.528 11.2759C152.003 11.2319 150.96 11.8655 150.957 12.8379C150.957 13.6733 151.553 14.0353 154.319 14.7155C157.42 15.4914 158.431 16.3397 158.428 18.106C158.426 20.3172 156.65 21.6465 153.72 21.644C150.915 21.6336 149.033 20.3819 148.634 18.2353Z" fill="#051D33"/>
+                            <path d="M160.044 21.2612V20.731H160.59V21.2612H160.044Z" fill="#072749"/>
+                            <path d="M165.705 18.2715V21.2612H165.351V20.3896C164.979 21.0362 164.255 21.3931 163.384 21.3931C162.237 21.3931 161.684 20.7388 161.684 19.9965C161.684 19.156 162.32 18.7758 163.022 18.6336C163.797 18.4836 164.832 18.3827 165.325 18.3233C165.333 17.25 164.928 16.7224 163.813 16.7224C162.985 16.7224 162.493 17.0767 162.293 17.8112L161.875 17.7052C162.093 16.8207 162.793 16.3526 163.831 16.3526C164.742 16.3526 165.37 16.7431 165.588 17.3508C165.668 17.5914 165.705 17.9534 165.705 18.2715ZM165.322 18.6879C164.766 18.7371 163.776 18.8172 163.102 18.9802C162.655 19.0862 162.083 19.3526 162.083 20.0069C162.083 20.4672 162.392 21.0233 163.366 21.0233C164.43 21.0233 165.149 20.4388 165.287 19.4586C165.322 19.2077 165.322 18.9 165.322 18.6879Z" fill="#072749"/>
+                            <path d="M166.98 15.4603V14.894H167.363V15.4603H166.98ZM166.98 21.2612V16.4845H167.363V21.2612H166.98Z" fill="#072749"/>
+                        </svg>
+                    </a>
+                    
+                    <div class="hidden md:flex items-center gap-8">
+                        <a href="#features" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors" aria-label="View Features">Features</a>
+                        <a href="#how-it-works" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors" aria-label="See How It Works">How it Works</a>
+                        <a href="#pricing" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors" aria-label="View Pricing">Pricing</a>
+                        <a href="#testimonials" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors" aria-label="Read Stories">Stories</a>
+                        <a href="#faq" class="text-sm font-medium text-gray-600 hover:text-brand-600 transition-colors" aria-label="Frequently Asked Questions">FAQs</a>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-orange-50 transition-colors" aria-label="Toggle Dark Mode">
+                            <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-orange-500"></i>
+                            <i data-lucide="moon" class="w-5 h-5 block dark:hidden text-gray-600"></i>
+                        </button>
+                        <a href="#start" class="hidden sm:inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-full font-medium transition-all hover:scale-105 hover:shadow-lg hover:shadow-brand-600/25">
+                            Start Writing Free
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-white">
+        <div class="absolute inset-0 -z-10">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-brand-500/10 rounded-full blur-3xl opacity-30 animate-pulse-slow"></div>
+            <div class="absolute bottom-0 right-0 w-[800px] h-[600px] bg-orange-200/20 rounded-full blur-3xl opacity-20"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <div class="space-y-8 animate-fade-in">
+                    <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight text-gray-900">
+                        Write, Edit, Cite <br/>
+                        <span class="gradient-text" id="scramble-text">and Create</span>
+                    </h1>
+                    
+                    <p class="text-xl text-gray-600 leading-relaxed max-w-lg">
+                        The All-in-One AI for Every Author, Student, and Researcher. Transform your writing—whether it’s a gripping story or a complex thesis.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#start" class="group inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all hover:scale-105 hover:shadow-xl hover:shadow-brand-600/25">
+                            Start Free Trial
+                            <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                        <button onclick="showDemo()" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-semibold text-lg border-2 border-gray-200 hover:border-brand-600 hover:text-brand-600 transition-all">
+                            <i data-lucide="play-circle" class="w-5 h-5"></i>
+                            Watch Demo
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center gap-6 text-sm text-gray-500">
+                        <div class="flex -space-x-2">
+                            <img src="https://i.pravatar.cc/100?img=1" width="32" height="32" class="w-8 h-8 rounded-full border-2 border-white" alt="Author 1">
+                            <img src="https://i.pravatar.cc/100?img=2" width="32" height="32" class="w-8 h-8 rounded-full border-2 border-white" alt="Author 2">
+                            <img src="https://i.pravatar.cc/100?img=3" width="32" height="32" class="w-8 h-8 rounded-full border-2 border-white" alt="Author 3">
+                            <div class="w-8 h-8 rounded-full border-2 border-white bg-brand-100 flex items-center justify-center text-xs font-bold text-brand-700">+2k</div>
+                        </div>
+                        <p>Trusted by 130,000+ authors</p>
+                    </div>
+                </div>
+                
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-r from-brand-500/10 to-orange-200/20 rounded-3xl blur-2xl transform rotate-3"></div>
+                    <div class="relative bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden hover-lift">
+                        <div class="bg-gray-50 px-4 py-3 border-b border-gray-200 flex items-center gap-2">
+                            <div class="flex gap-1.5">
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                            </div>
+                            <div class="flex-1 text-center text-xs text-gray-400 font-mono">manuscript-editor.ai</div>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0 mt-1">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-brand-600"></i>
+                                </div>
+                                <div class="space-y-2 flex-1">
+                                    <div class="h-2 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                    <div class="h-2 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                                    <div class="h-2 bg-gray-200 rounded w-5/6 animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div class="pl-11 space-y-3">
+                                <div class="p-3 bg-brand-50 rounded-lg border border-brand-100">
+                                    <p class="text-sm text-gray-700">
+                                        "The quantum particles oscillated in harmonic resonance, creating a field of infinite possibility..."
+                                    </p>
+                                    <div class="mt-2 flex items-center gap-2 text-xs text-brand-600">
+                                        <i data-lucide="check-circle" class="w-3 h-3"></i>
+                                        <span>Humanized tone applied</span>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">Sci-Fi</span>
+                                    <span class="px-2 py-1 bg-gray-100 rounded text-xs text-gray-600">Chapter 4</span>
+                                    <span class="px-2 py-1 bg-orange-100 rounded text-xs text-brand-700">2,847 words</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating Elements -->
+                    <div class="absolute -top-6 -right-6 bg-white p-4 rounded-xl shadow-xl border border-orange-100 animate-float">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="trending-up" class="w-5 h-5 text-brand-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Writing Speed</p>
+                                <p class="text-lg font-bold text-gray-900">5x faster</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-orange-100 animate-float" style="animation-delay: 1s;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                                <i data-lucide="users" class="w-5 h-5 text-brand-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Collaborators</p>
+                                <p class="text-lg font-bold text-gray-900">Live editing</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logo Cloud -->
+    <section class="py-12 border-y border-orange-50 bg-orange-50/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm font-medium text-gray-500 mb-8 uppercase tracking-wider">Trusted by authors at</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <div class="flex justify-center text-xl font-bold font-display text-gray-700">Penguin</div>
+                <div class="flex justify-center text-xl font-bold font-display text-gray-700">Harper</div>
+                <div class="flex justify-center text-xl font-bold font-display text-gray-700">MIT Press</div>
+                <div class="flex justify-center text-xl font-bold font-display text-gray-700">Stanford</div>
+                <div class="flex justify-center text-xl font-bold font-display text-gray-700">Oxford</div>
+                <div class="flex justify-center text-xl font-bold font-display text-gray-700">Medium</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-24 relative bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="font-display text-4xl sm:text-5xl font-bold mb-6 text-gray-900">Powerful Tools for <span class="gradient-text">Every Writer</span></h2>
+                <p class="text-xl text-gray-600">Whether you're writing a novel, a research paper, or a short story, we have the specialized tools you need.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="feature-card relative group p-8 rounded-2xl bg-white border border-gray-200 hover-lift cursor-pointer" onclick="toggleFeature(this)">
+                    <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="book" class="w-7 h-7 text-brand-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3 text-gray-900">Full Paper Generation</h3>
+                    <p class="text-gray-600 mb-4">Build a complete research manuscript from start to finish. AI maintains context from hypothesis to conclusion.</p>
+                    <div class="feature-details hidden space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Section-wise drafting</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Consistent logical flow</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-brand-600 font-medium text-sm group-hover:gap-2 transition-all">
+                        Learn more <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card relative group p-8 rounded-2xl bg-white border border-gray-200 hover-lift cursor-pointer" onclick="toggleFeature(this)">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="message-square" class="w-7 h-7 text-brand-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3 text-gray-900">Research Chat</h3>
+                    <p class="text-gray-600 mb-4">A fact-grounded assistant that answers queries using real, verified sources to eliminate AI hallucinations.</p>
+                    <div class="feature-details hidden space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Citations provided by default</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Real-time source verification</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-brand-600 font-medium text-sm group-hover:gap-2 transition-all">
+                        Learn more <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card relative group p-8 rounded-2xl bg-white border border-gray-200 hover-lift cursor-pointer" onclick="toggleFeature(this)">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="scroll" class="w-7 h-7 text-brand-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3 text-gray-900">Lore Book</h3>
+                    <p class="text-gray-600 mb-4">Your central hub for world-building. Store character traits, locations, and plot points to maintain consistency.</p>
+                    <div class="feature-details hidden space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Automatic consistency checks</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Character & location tracking</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-brand-600 font-medium text-sm group-hover:gap-2 transition-all">
+                        Learn more <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card relative group p-8 rounded-2xl bg-white border border-gray-200 hover-lift cursor-pointer" onclick="toggleFeature(this)">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="quote" class="w-7 h-7 text-brand-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3 text-gray-900">Auto Citations</h3>
+                    <p class="text-gray-600 mb-4">Generate and format in-text citations and bibliographies (APA, MLA, Chicago, IEEE) while you type.</p>
+                    <div class="feature-details hidden space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Immediate academic compliance</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Reference tracking</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-brand-600 font-medium text-sm group-hover:gap-2 transition-all">
+                        Learn more <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card relative group p-8 rounded-2xl bg-white border border-gray-200 hover-lift cursor-pointer" onclick="toggleFeature(this)">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="bar-chart-2" class="w-7 h-7 text-brand-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3 text-gray-900">Data Visualization</h3>
+                    <p class="text-gray-600 mb-4">Transform research data into professional visuals like Heatmaps, Histograms, and Line Graphs directly in the editor.</p>
+                    <div class="feature-details hidden space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Multiple chart types</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Instant data-to-graph conversion</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-brand-600 font-medium text-sm group-hover:gap-2 transition-all">
+                        Learn more <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card relative group p-8 rounded-2xl bg-white border border-gray-200 hover-lift cursor-pointer" onclick="toggleFeature(this)">
+                    <div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i data-lucide="user-check" class="w-7 h-7 text-brand-600"></i>
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-3 text-gray-900">Humanizer</h3>
+                    <p class="text-gray-600 mb-4">Refine AI text into natural, nuanced prose. Designed to achieve 0% AI detection while preserving technical accuracy.</p>
+                    <div class="feature-details hidden space-y-3 text-sm text-gray-500 border-t border-gray-100 pt-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Preserves jargon & formulas</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-brand-500"></i>
+                            <span>Authentic scholarly voice</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center text-brand-600 font-medium text-sm group-hover:gap-2 transition-all">
+                        Learn more <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Models Section -->
+    <section class="py-16 bg-white border-b border-orange-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="font-display text-3xl font-bold mb-10 text-gray-900">Powering Your Writing with <span class="gradient-text">Best-in-Class Models</span></h2>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-80">
+                <!-- OpenAI -->
+                <div class="flex items-center gap-2 grayscale hover:grayscale-0 transition-all duration-300">
+                    <span class="font-bold text-xl text-gray-700">OpenAI</span>
+                </div>
+                <!-- Anthropic -->
+                <div class="flex items-center gap-2 grayscale hover:grayscale-0 transition-all duration-300">
+                    <span class="font-bold text-xl text-gray-700">Claude</span>
+                </div>
+                <!-- Google -->
+                <div class="flex items-center gap-2 grayscale hover:grayscale-0 transition-all duration-300">
+                    <span class="font-bold text-xl text-gray-700">Gemini</span>
+                </div>
+                <!-- Mistral -->
+                <div class="flex items-center gap-2 grayscale hover:grayscale-0 transition-all duration-300">
+                    <span class="font-bold text-xl text-gray-700">Mistral AI</span>
+                </div>
+                <!-- Meta -->
+                <div class="flex items-center gap-2 grayscale hover:grayscale-0 transition-all duration-300">
+                    <span class="font-bold text-xl text-gray-700">Meta Llama</span>
+                </div>
+                <!-- DeepSeek -->
+                <div class="flex items-center gap-2 grayscale hover:grayscale-0 transition-all duration-300">
+                    <span class="font-bold text-xl text-gray-700">DeepSeek</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it Works (Workflows) -->
+    <section id="how-it-works" class="py-24 bg-orange-50/30 relative overflow-hidden">
+        <div class="absolute inset-0 -z-10">
+            <div class="absolute top-1/2 left-0 w-[500px] h-[500px] bg-brand-500/5 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="font-display text-4xl sm:text-5xl font-bold mb-6 text-gray-900">Tailored Workflows for <span class="gradient-text">Everyone</span></h2>
+                <p class="text-xl text-gray-600">Whether you're crafting a novel or a research paper, Manuscripts.ai adapts to your needs.</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-2 gap-12">
+                <!-- Author Workflow -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-orange-100">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+                            <i data-lucide="feather" class="w-6 h-6 text-brand-600"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold font-display text-gray-900">For Authors</h3>
+                    </div>
+                    <div class="space-y-8 relative pl-8 border-l-2 border-orange-100">
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-brand-500 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">Brainstorm & Structure</h4>
+                            <p class="text-gray-600 text-sm">Input raw ideas, define genre and style, and use AI templates to generate outlines and beats.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-orange-300 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">World Building</h4>
+                            <p class="text-gray-600 text-sm">Create detailed character profiles and location lore in the Lore Book for consistency.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-orange-200 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">Drafting</h4>
+                            <p class="text-gray-600 text-sm">Generate full chapters from your scene beats, maintaining your unique narrative voice.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-orange-100 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">Refining</h4>
+                            <p class="text-gray-600 text-sm">Use Humanizer and style editors to polish prose and ensure emotional resonance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Researcher Workflow -->
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-blue-100">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                            <i data-lucide="graduation-cap" class="w-6 h-6 text-blue-600"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold font-display text-gray-900">For Students</h3>
+                    </div>
+                    <div class="space-y-8 relative pl-8 border-l-2 border-blue-100">
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-blue-500 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">Direction & Logic</h4>
+                            <p class="text-gray-600 text-sm">Define research questions, hypotheses, and methodologies using technical templates.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-blue-300 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">Research Chat</h4>
+                            <p class="text-gray-600 text-sm">Query verified sources to gather facts and citations without hallucinations.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-blue-200 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">Writing & Citations</h4>
+                            <p class="text-gray-600 text-sm">Draft sections with real-time auto-citations in APA, MLA, or Chicago format.</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[39px] top-1 w-5 h-5 rounded-full bg-blue-100 border-4 border-white"></div>
+                            <h4 class="font-bold text-gray-900 mb-2">Technical Review</h4>
+                            <p class="text-gray-600 text-sm">Utilize technical models (Claude/DeepSeek) for rigorous academic language.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wall of Love (Testimonials) -->
+    <section id="testimonials" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="font-display text-4xl sm:text-5xl font-bold mb-6 text-gray-900">Why our users love <span class="gradient-text">Manuscripts</span></h2>
+                <p class="text-xl text-gray-600">130,000+ creators and teams choose Manuscripts to curate their writing presence.</p>
+            </div>
+            
+            <div class="masonry-grid">
+                <!-- Review 1 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-yellow text-sm">MK</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Marc Köhlbrugge</h3>
+                            <p class="text-sm text-gray-500">@marckohlbrugge</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p class="mb-3">Writing more with <span class="text-brand-600 font-medium">@manuscripts</span> these days.</p>
+                        <ul class="space-y-1 text-sm list-disc list-inside text-gray-600 mb-3">
+                            <li>Distraction-free</li>
+                            <li>Write-only focus</li>
+                            <li>Effortless organization</li>
+                            <li>Actionable metrics</li>
+                        </ul>
+                        <p>I recommend giving it a shot.</p>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-purple text-sm">S</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Santiago</h3>
+                            <p class="text-sm text-gray-500">@svpinc</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p class="mb-3">For 24 months, I tried almost a dozen writing tools.</p>
+                        <p class="mb-3">Then I found <span class="text-brand-600 font-medium">@manuscripts</span>, and I've been using it for seven months straight.</p>
+                        <p>When it comes down to the experience of drafting and long-form content writing, Manuscripts is in a league of its own.</p>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-blue text-sm">E</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Easlo</h3>
+                            <p class="text-sm text-gray-500">@heyeaslo</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p>I recommend <span class="text-brand-600 font-medium">@manuscripts</span>, I use it to write all threads and chapters, including posting schedule and analytics.</p>
+                    </div>
+                </div>
+
+                <!-- Review 4 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-green text-sm">JH</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Jurre Houtkamp</h3>
+                            <p class="text-sm text-gray-500">@jurrehoutkamp</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p>Manuscripts is fantastic and way too cheap for what you get.</p>
+                        <p class="mt-3">We've tried many alternatives, nothing beats it. If you're still writing in standard docs you're wasting time.</p>
+                    </div>
+                </div>
+
+                <!-- Review 5 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-red text-sm">LR</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Luca Rossi</h3>
+                            <p class="text-sm text-gray-500">@lucaronin</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p>After trying literally all the major writing tools, I settled with <span class="text-brand-600 font-medium">@manuscripts</span>.</p>
+                        <p class="mt-3">Killer feature to me is the native AI editor — unique and super useful 👍</p>
+                    </div>
+                </div>
+
+                <!-- Review 6 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-orange text-sm">NM</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Naitik Mehta</h3>
+                            <p class="text-sm text-gray-500">@heyNaitik</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p>I've reached 600K+ impressions since I started writing online 6 months ago with <span class="text-brand-600 font-medium">@manuscripts</span> 😊</p>
+                        <p class="mt-3 mb-2">Shoutout to the team for building a beautiful writing tool with thought, care, and good design.</p>
+                        <ul class="space-y-1 text-sm list-disc list-inside text-gray-600">
+                            <li>Clean UX/design</li>
+                            <li>Mobile-friendly</li>
+                            <li>Keyboard shortcuts</li>
+                            <li>Rarely see any bugs</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Review 7 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-teal text-sm">DH</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">DHH</h3>
+                            <p class="text-sm text-gray-500">@dhh</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p>This is my new go-to writing environment for threads.</p>
+                        <p class="mt-3">They've built something wonderfully simple and distraction free 😊</p>
+                    </div>
+                </div>
+
+                <!-- Review 8 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-pink text-sm">VT</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">Visual Theory</h3>
+                            <p class="text-sm text-gray-500">@visualtheory_</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p>Impressed by the way <span class="text-brand-600 font-medium">@manuscripts</span> has simplified my writing experience.</p>
+                        <p class="mt-3">Beautiful user experience.<br />0 friction.</p>
+                        <p class="mt-3">Simplicity is the ultimate sophistication.</p>
+                    </div>
+                </div>
+
+                <!-- Review 9 -->
+                <div class="review-card p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="avatar avatar-indigo text-sm">DE</div>
+                        <div>
+                            <h3 class="font-bold text-gray-900">daws.eth</h3>
+                            <p class="text-sm text-gray-500">@DawsonBotsford</p>
+                        </div>
+                    </div>
+                    <div class="text-gray-700">
+                        <p>Impressed with <span class="text-brand-600 font-medium">@manuscripts</span>. It's the editor you wish you always had.</p>
+                        <p class="mt-3">Saving multiple drafts, re-ordering sections, and moving attached images around is EASY.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="py-24 bg-orange-50/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="font-display text-4xl sm:text-5xl font-bold mb-6 text-gray-900">Simple, transparent <span class="gradient-text">pricing</span></h2>
+                <p class="text-xl text-gray-600">Choose the plan that fits your writing journey.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Free Plan -->
+                <div class="p-8 rounded-2xl bg-white border border-gray-200 hover-lift shadow-sm">
+                    <h3 class="font-display text-xl font-bold mb-2 text-gray-900">Trial</h3>
+                    <p class="text-gray-500 mb-6">Starter Plan</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-gray-900">Free</span>
+                        <span class="text-gray-500">/ 7 Days</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            10,000 tokens
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            Access to 30+ AI Templates
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            Basic AI Writing & Editing
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            Humanizer Access
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 rounded-full border-2 border-gray-200 font-semibold hover:border-brand-600 hover:text-brand-600 transition-all">
+                        Start Free Trial
+                    </button>
+                </div>
+                
+                <!-- Student Plan -->
+                <div class="p-8 rounded-2xl bg-white border border-gray-200 hover-lift shadow-sm relative">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gray-100 text-gray-600 px-4 py-1 rounded-full text-sm font-bold shadow-sm">
+                        Popular for Students
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-2 text-gray-900">Student Professional</h3>
+                    <p class="text-gray-500 mb-6">For academic excellence</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold text-gray-900">$15</span>
+                        <span class="text-gray-500">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            Unlimited Documents
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            1M tokens per month
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            Auto Citations & References
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-600">
+                            <i data-lucide="check" class="w-5 h-5 text-brand-500"></i>
+                            Research Chat & Analytics
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 rounded-full border-2 border-brand-200 bg-brand-50 text-brand-700 font-semibold hover:bg-brand-100 transition-all">
+                        Choose Student Plan
+                    </button>
+                </div>
+                
+                <!-- Author Plan -->
+                <div class="p-8 rounded-2xl bg-brand-600 text-white relative transform scale-105 shadow-2xl shadow-brand-600/25">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-white text-brand-600 px-4 py-1 rounded-full text-sm font-bold shadow-lg">
+                        Best Value
+                    </div>
+                    <h3 class="font-display text-xl font-bold mb-2">Author Professional</h3>
+                    <p class="text-brand-100 mb-6">For serious writers</p>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold">$39.88</span>
+                        <span class="text-brand-100">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            Unlimited Documents
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            1M tokens per month
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            Lore Book & World Building
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            Advanced Editing Suite
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            Full Paper Generation
+                        </li>
+                    </ul>
+                    <button class="w-full py-3 rounded-full bg-white text-brand-600 font-semibold hover:bg-orange-50 transition-all hover:scale-105">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center bg-white p-8 rounded-2xl shadow-sm border border-gray-100 max-w-3xl mx-auto">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="text-left">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Need More Power?</h3>
+                        <p class="text-gray-600">Get an additional <span class="font-bold text-brand-600">200,000 tokens</span> for your projects.</p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <span class="text-3xl font-bold text-gray-900">$10</span>
+                        <a href="https://sales.manuscripts.ai/purchase-tokens/" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-brand-600 hover:bg-brand-700 transition-all">
+                            Buy Tokens
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-4xl font-bold mb-6 text-gray-900">Frequently Asked <span class="gradient-text">Questions</span></h2>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="faq-item">
+                    <button class="faq-button" onclick="toggleFaq(this)">
+                        <span>How can I upload my own book to the platform?</span>
+                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5"></i>
+                    </button>
+                    <div class="faq-content">
+                        <p class="pb-4">Once you create a document, you can find an option in the editor called 'Import File'. You can upload files with extensions .TXT, .DOCX, and .RTF to bring your existing work into the platform.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-button" onclick="toggleFaq(this)">
+                        <span>What is an AI Book Writer?</span>
+                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5"></i>
+                    </button>
+                    <div class="faq-content">
+                        <p class="pb-4">An AI Book Writer is an intelligent writing assistant designed to help you brainstorm, plan, and write full-length books faster. It acts as a creative co-author, helping with everything from sorting raw ideas in the Braindump tool to maintaining world-building consistency with the Lore Book.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-button" onclick="toggleFaq(this)">
+                        <span>What are Tokens and how do they work?</span>
+                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5"></i>
+                    </button>
+                    <div class="faq-content">
+                        <p class="pb-4">Language model tokens can be thought of as pieces of words. Before processing prompts, input text is split into tokens. Roughly, 1,000 tokens is about 750 words. You can purchase extra tokens if you need more than your plan's monthly allowance.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-button" onclick="toggleFaq(this)">
+                        <span>How do I create graphs using the platform?</span>
+                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5"></i>
+                    </button>
+                    <div class="faq-content">
+                        <p class="pb-4">To generate a graph, simply select the relevant data or content in your document and click the graph icon button. The tool will analyze your content and automatically visualize it as a Bar, Column, Pie, Line graph, or Heatmap.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-button" onclick="toggleFaq(this)">
+                        <span>Can I add citations to my document?</span>
+                        <i data-lucide="chevron-down" class="faq-icon w-5 h-5"></i>
+                    </button>
+                    <div class="faq-content">
+                        <p class="pb-4">Yes! The 'Citations' tool simplifies APA, MLA, Chicago, and Harvard styles. It allows you to manage and create citations in one location, searching an extensive list of sources and ensuring your references are formatted to the correct standards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="start" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-brand-600">
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+        </div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h2 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">Ready to write your masterpiece?</h2>
+            <p class="text-xl text-brand-100 mb-10 max-w-2xl mx-auto">Join 130,000+ authors who are writing faster, better, and with more joy. Start your free trial today—no credit card required.</p>
+            
+            <form class="max-w-md mx-auto flex flex-col sm:flex-row gap-4" onsubmit="handleSubmit(event)">
+                <input type="email" placeholder="Enter your email" class="flex-1 px-6 py-4 rounded-full text-gray-900 focus:outline-none focus:ring-4 focus:ring-white/30" required>
+                <button type="submit" class="px-8 py-4 rounded-full bg-white text-brand-600 font-bold hover:bg-orange-50 transition-all hover:scale-105 flex items-center justify-center gap-2">
+                    Get Started
+                    <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+            </form>
+            
+            <p class="mt-6 text-brand-200 text-sm">Free 7-day trial • Cancel anytime • 24/7 support</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white text-gray-600 py-12 border-t border-orange-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="mb-4">
+                        <svg width="174" height="30" viewBox="0 0 174 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Manuscripts.ai">
+                            <path d="M22.7485 21.4009H7.56707C6.92298 21.4009 6.396 20.8888 6.396 20.2629V3.41122C6.396 2.78535 6.92298 2.27328 7.56707 2.27328H22.7485C23.3926 2.27328 23.9196 2.78535 23.9196 3.41122V20.2604C23.9196 20.8888 23.3926 21.4009 22.7485 21.4009Z" fill="#FFAF00"/>
+                            <path d="M25.8383 10.9733V22.5698C25.8383 22.8155 25.6653 23.0172 25.4524 23.0172H4.86004C4.64712 23.0172 4.47412 22.8155 4.47412 22.5698V10.9733C4.47412 10.725 4.64446 10.5258 4.86004 10.5258H9.27554C11.8226 10.6836 14.0131 12.406 15.1575 14.881C16.302 12.4034 18.4924 10.6836 21.0395 10.5258H25.455C25.6653 10.5258 25.8383 10.725 25.8383 10.9733Z" fill="#FF7422"/>
+                            <path d="M9.9541 5.52673H20.5603" stroke="white" stroke-width="0.909231" stroke-miterlimit="10" stroke-linecap="round"/>
+                            <path d="M9.9541 8.19308H20.5603" stroke="white" stroke-width="0.909231" stroke-miterlimit="10" stroke-linecap="round"/>
+                            <path d="M23.9193 10.5258V19.2776C23.9193 19.681 23.5786 20.0121 23.1634 20.0121H7.14894C6.73374 20.0121 6.39307 19.681 6.39307 19.2776V10.5258H9.27551C11.8226 10.6836 14.0131 12.406 15.1575 14.881C16.302 12.4034 18.4924 10.6836 21.0395 10.5258H23.9193Z" fill="#FFAF00"/>
+                            <path d="M23.9193 10.5258V19.2776C23.9193 19.681 23.5786 20.0121 23.1634 20.0121H7.14894C6.73374 20.0121 6.39307 19.681 6.39307 19.2776V10.5258H9.27551C11.8226 10.6836 14.0131 12.406 15.1575 14.881C16.302 12.4034 18.4924 10.6836 21.0395 10.5258H23.9193Z" fill="#EF5D14"/>
+                            <path d="M32.958 21.1862L32.9766 5.95602L34.7412 5.95861L40.6472 18.0983L46.5505 5.97413L48.3364 5.97671L48.3177 21.1965L46.4786 21.194L46.4919 10.1095L41.1555 21.1991H40.1202L34.8104 10.0965L34.7971 21.1914L32.958 21.1862Z" fill="#051D33"/>
+                            <path d="M60.7925 14.1543L60.7845 21.2198L59.0651 21.2172L59.0678 19.4405C58.1309 20.837 56.6697 21.5327 54.7108 21.5301C52.0759 21.5276 50.7185 19.9603 50.7212 18.1189C50.7239 16.3215 51.8231 15.2741 53.609 14.7698C55.0781 14.3896 57.1488 14.1491 58.8895 13.9189C58.8362 12.1008 58.0324 11.2319 55.9964 11.2293C54.5698 11.2267 53.4253 11.8293 52.9995 13.2258L51.1604 12.6853C51.7193 10.6862 53.3641 9.47325 56.0203 9.47583C58.1442 9.47842 59.7411 10.2207 60.4145 11.7129C60.7419 12.4189 60.7951 13.2543 60.7925 14.1543ZM58.6659 17.325C58.8309 16.7741 58.8522 16.0448 58.8628 15.5276C57.2074 15.737 55.6184 15.9155 54.474 16.231C53.5052 16.5258 52.6455 17.0431 52.6428 18.1112C52.6428 19.0526 53.3268 19.9526 55.0036 19.9551C57.0956 19.9551 58.3811 18.7422 58.6659 17.325Z" fill="#051D33"/>
+                            <path d="M73.9538 14.9198L73.9458 21.2353L71.9869 21.2327L71.9949 15.5095C71.9976 13.3629 71.2923 11.2991 68.8117 11.2965C66.8635 11.294 65.5779 12.5612 65.5753 15.2069L65.5673 21.225L63.6084 21.2224L63.6217 9.79912L65.3624 9.80171L65.3597 11.2707C66.2327 10.1405 67.5821 9.50688 69.2801 9.50947C73.0675 9.51464 73.9565 12.7526 73.9538 14.9198Z" fill="#051D33"/>
+                            <path d="M84.9563 9.82498L86.9046 9.82757L86.8913 21.2508L85.1613 21.2483L85.1639 19.7793C84.291 20.9095 82.9416 21.5431 81.2435 21.5405C77.4561 21.5353 76.5672 18.2974 76.5698 16.1302L76.5778 9.81464L78.5367 9.81722L78.5287 15.5405C78.5261 17.687 79.2314 19.7508 81.7119 19.7534C83.6602 19.756 84.9457 18.4888 84.9484 15.8431L84.9563 9.82498Z" fill="#051D33"/>
+                            <path d="M89.292 18.1655L91.2722 17.8603C91.5862 19.1095 92.8052 19.8828 94.5033 19.8853C96.1029 19.8879 97.085 19.2 97.085 18.0802C97.085 17.1181 96.6405 16.8414 93.7687 16.0888C90.6574 15.2819 89.6673 14.4983 89.6699 12.8586C89.6726 10.8491 91.4824 9.51724 94.1919 9.52241C96.8694 9.525 98.8043 10.8621 99.0545 12.8716L97.0743 13.2181C96.88 12.0026 95.7915 11.25 94.1919 11.206C92.6668 11.1621 91.6208 11.7957 91.6208 12.7681C91.6208 13.6034 92.217 13.9655 94.9824 14.6457C98.0831 15.4216 99.0944 16.2698 99.0918 18.0362C99.0891 20.2474 97.3139 21.5767 94.3862 21.5741C91.5729 21.5612 89.6912 20.3121 89.292 18.1655Z" fill="#051D33"/>
+                            <path d="M100.846 15.556C100.883 11.9922 102.943 9.53016 106.48 9.53275C108.95 9.53533 110.866 10.8077 111.484 12.8586L109.568 13.4172C109.067 12.0957 107.883 11.3198 106.456 11.3198C104.04 11.3172 102.927 13.081 102.903 15.556C102.922 18.106 104.106 19.8 106.446 19.8026C107.971 19.8052 108.982 19.1069 109.517 17.806L111.476 18.3052C110.645 20.4414 108.87 21.5922 106.443 21.5896C102.863 21.5871 100.872 19.0552 100.846 15.556Z" fill="#051D33"/>
+                            <path d="M119.783 9.86638L119.78 11.6328C118.963 11.431 117.909 11.4828 117.092 12.0621C115.948 12.8534 115.663 14.1983 115.663 15.5509L115.655 21.2845L113.707 21.2819L113.72 9.85862L115.45 9.86121L115.447 11.669C115.708 11.2241 116.057 10.8336 116.451 10.5595C117.356 9.85345 118.74 9.64138 119.783 9.86638Z" fill="#051D33"/>
+                            <path d="M122.072 7.84912L122.074 5.9017L124.012 5.90429L124.009 7.8517L122.072 7.84912ZM122.056 21.2922L122.069 9.86894L124.007 9.87153L123.993 21.2948L122.056 21.2922Z" fill="#051D33"/>
+                            <path d="M137.935 15.5896C137.929 19.0164 135.946 21.6258 132.659 21.6233C131.201 21.6207 130.038 21.1138 129.199 20.2448L129.191 26.3793L127.243 26.3767L127.264 9.8767L128.994 9.87928L128.992 11.1595C129.854 10.156 131.084 9.56377 132.683 9.56635C135.949 9.56635 137.937 12.1603 137.935 15.5896ZM135.877 15.587C135.88 13.1741 134.773 11.2914 132.377 11.2888C130.08 11.2862 128.989 13.05 128.986 15.5793C128.984 18.0853 130.048 19.8957 132.42 19.8983C134.738 19.9008 135.875 18.0181 135.877 15.587Z" fill="#051D33"/>
+                            <path d="M143.351 11.4491L143.343 16.9164C143.343 17.8577 143.297 18.4914 143.58 18.9698C144.101 19.8801 145.278 19.9448 146.888 19.7043L146.885 21.3233C144.783 21.7345 142.619 21.4991 141.804 19.9422C141.339 19.0526 141.405 18.1862 141.405 17.0017L141.413 11.4491L139.028 11.4465L139.031 9.89222L141.416 9.8948L141.418 6.72153L143.356 6.72411L143.353 9.89739L146.901 9.90256L146.898 11.4569L143.351 11.4491Z" fill="#051D33"/>
+                            <path d="M148.634 18.2353L150.614 17.9302C150.928 19.1793 152.147 19.9526 153.845 19.9552C155.445 19.9578 156.427 19.2698 156.427 18.15C156.427 17.1879 155.982 16.9112 153.108 16.1586C149.996 15.3517 149.006 14.5681 149.009 12.9284C149.012 10.919 150.819 9.58707 153.531 9.59224C156.209 9.59483 158.143 10.9319 158.394 12.9414L156.411 13.2879C156.217 12.0724 155.128 11.3198 153.528 11.2759C152.003 11.2319 150.96 11.8655 150.957 12.8379C150.957 13.6733 151.553 14.0353 154.319 14.7155C157.42 15.4914 158.431 16.3397 158.428 18.106C158.426 20.3172 156.65 21.6465 153.72 21.644C150.915 21.6336 149.033 20.3819 148.634 18.2353Z" fill="#051D33"/>
+                            <path d="M160.044 21.2612V20.731H160.59V21.2612H160.044Z" fill="#072749"/>
+                            <path d="M165.705 18.2715V21.2612H165.351V20.3896C164.979 21.0362 164.255 21.3931 163.384 21.3931C162.237 21.3931 161.684 20.7388 161.684 19.9965C161.684 19.156 162.32 18.7758 163.022 18.6336C163.797 18.4836 164.832 18.3827 165.325 18.3233C165.333 17.25 164.928 16.7224 163.813 16.7224C162.985 16.7224 162.493 17.0767 162.293 17.8112L161.875 17.7052C162.093 16.8207 162.793 16.3526 163.831 16.3526C164.742 16.3526 165.37 16.7431 165.588 17.3508C165.668 17.5914 165.705 17.9534 165.705 18.2715ZM165.322 18.6879C164.766 18.7371 163.776 18.8172 163.102 18.9802C162.655 19.0862 162.083 19.3526 162.083 20.0069C162.083 20.4672 162.392 21.0233 163.366 21.0233C164.43 21.0233 165.149 20.4388 165.287 19.4586C165.322 19.2077 165.322 18.9 165.322 18.6879Z" fill="#072749"/>
+                            <path d="M166.98 15.4603V14.894H167.363V15.4603H166.98ZM166.98 21.2612V16.4845H167.363V21.2612H166.98Z" fill="#072749"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm">The complete AI writing platform for authors who refuse to compromise on quality.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-gray-900 font-bold mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Features</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Pricing</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">API</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Integrations</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-gray-900 font-bold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Blog</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Writing Guides</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Community</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Help Center</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-gray-900 font-bold mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">About</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Careers</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Privacy</a></li>
+                        <li><a href="#" class="hover:text-brand-600 transition-colors">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-orange-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-sm">© 2026 Manuscripts.ai. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-brand-600 transition-colors" aria-label="Twitter"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    <a href="#" class="hover:text-brand-600 transition-colors" aria-label="GitHub"><i data-lucide="github" class="w-5 h-5"></i></a>
+                    <a href="#" class="hover:text-brand-600 transition-colors" aria-label="LinkedIn"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Dark mode toggle (now defaults to light/orange)
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+        
+        // Check for saved theme preference
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        // Cursor glow effect
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+        
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg');
+            } else {
+                navbar.classList.remove('shadow-lg');
+            }
+        });
+        
+        // Text scramble effect
+        class TextScramble {
+            constructor(el) {
+                this.el = el;
+                this.chars = '!<>-_\\/[]{}—=+*^?#________';
+                this.update = this.update.bind(this);
+            }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) {
+                        complete++;
+                        output += to;
+                    } else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.randomChar();
+                            this.queue[i].char = char;
+                        }
+                        output += `<span class="text-brand-600">${char}</span>`;
+                    } else {
+                        output += from;
+                    }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) {
+                    this.resolve();
+                } else {
+                    this.frameRequest = requestAnimationFrame(this.update);
+                    this.frame++;
+                }
+            }
+            randomChar() {
+                return this.chars[Math.floor(Math.random() * this.chars.length)];
+            }
+        }
+        
+        // Initialize text scramble
+        const el = document.getElementById('scramble-text');
+        if (el) {
+            const fx = new TextScramble(el);
+            const phrases = [
+                'and Create',
+                'for Everyone',
+                'with AI',
+                'that Inspires'
+            ];
+            let counter = 0;
+            const next = () => {
+                fx.setText(phrases[counter]).then(() => {
+                    setTimeout(next, 2000);
+                });
+                counter = (counter + 1) % phrases.length;
+            };
+            next();
+        }
+        
+        // Feature toggle
+        function toggleFeature(element) {
+            const details = element.querySelector('.feature-details');
+            const isHidden = details.classList.contains('hidden');
+            
+            // Close all others
+            document.querySelectorAll('.feature-details').forEach(d => d.classList.add('hidden'));
+            
+            if (isHidden) {
+                details.classList.remove('hidden');
+                details.style.animation = 'fadeIn 0.3s ease-in';
+            }
+        }
+
+        // FAQ Toggle
+        function toggleFaq(button) {
+            const item = button.parentElement;
+            const content = button.nextElementSibling;
+            
+            // Close all other FAQs
+            document.querySelectorAll('.faq-item').forEach(faq => {
+                if (faq !== item) {
+                    faq.classList.remove('active');
+                    faq.querySelector('.faq-content').style.maxHeight = null;
+                }
+            });
+
+            // Toggle current FAQ
+            item.classList.toggle('active');
+            if (item.classList.contains('active')) {
+                content.style.maxHeight = content.scrollHeight + "px";
+            } else {
+                content.style.maxHeight = null;
+            }
+        }
+        
+        // Demo modal placeholder (Would be a real modal in prod)
+        function showDemo() {
+            // Simple placeholder - in a real implementation this would trigger a modal with the YouTube embed
+            const videoId = 'dNXD_kS82Yg'; // From old code
+            const url = `https://www.youtube.com/watch?v=${videoId}`;
+            window.open(url, '_blank');
+        }
+        
+        // Form submission
+        function handleSubmit(e) {
+            e.preventDefault();
+            const email = e.target.querySelector('input[type="email"]').value;
+            // Redirect to signup with email pre-filled (simulated)
+            window.location.href = `https://app.manuscripts.ai/signup?email=${encodeURIComponent(email)}`;
+        }
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe elements
+        document.querySelectorAll('.hover-lift').forEach((el) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

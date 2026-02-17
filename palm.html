@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ghetto Palm Rejection</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #1e1e1e; color: white; font-family: sans-serif;}
+        canvas { display: block; background-color: #2d2d2d; touch-action: none; }
+        #debug { position: absolute; top: 10px; left: 10px; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="debug">Touch size: 0 | Status: Waiting...</div>
+    <canvas id="drawCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('drawCanvas');
+        const ctx = canvas.getContext('2d');
+        const debug = document.getElementById('debug');
+
+        // Make canvas fill the screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Styling the pen
+        ctx.strokeStyle = '#00ffcc';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+
+        // The magic threshold - you will need to tweak this for the Tab A9+!
+        const MAX_TOUCH_RADIUS = 15; 
+
+        let isDrawing = false;
+        let activeTouchId = null;
+
+        // --- The Heuristic Filter ---
+        function isValidStylus(touch) {
+            // Some browsers report radius, some report force. We check radius.
+            const size = Math.max(touch.radiusX || 0, touch.radiusY || 0);
+            debug.innerText = `Touch size: ${Math.round(size)} | Status: ${size <= MAX_TOUCH_RADIUS ? 'DRAWING 🖋️' : 'IGNORED (Palm) ✋'}`;
+            
+            // If the browser doesn't support radius, this hack fails (size will be 0).
+            if (size === 0) return true; // Fallback if hardware doesn't report size
+            
+            return size <= MAX_TOUCH_RADIUS;
+        }
+
+        // --- Touch Events ---
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Stop scrolling/zooming
+            
+            // If we are already drawing, ignore new touches (like a palm dropping down)
+            if (isDrawing) return;
+
+            const touch = e.changedTouches[0];
+            
+            if (isValidStylus(touch)) {
+                isDrawing = true;
+                activeTouchId = touch.identifier;
+                ctx.beginPath();
+                ctx.moveTo(touch.clientX, touch.clientY);
+            }
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!isDrawing) return;
+
+            // Find the specific touch point we started drawing with
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                const touch = e.changedTouches[i];
+                if (touch.identifier === activeTouchId) {
+                    
+                    // Optional: continually check if it suddenly became a fat palm swipe
+                    if (!isValidStylus(touch)) {
+                        isDrawing = false; 
+                        return;
+                    }
+
+                    ctx.lineTo(touch.clientX, touch.clientY);
+                    ctx.stroke();
+                }
+            }
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            for (let i = 0; i < e.changedTouches.length; i++) {
+                if (e.changedTouches[i].identifier === activeTouchId) {
+                    isDrawing = false;
+                    activeTouchId = null;
+                    debug.innerText = `Touch size: 0 | Status: Waiting...`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

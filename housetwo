@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedural City & Architecture Generator (Windows & Lights)</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #050505; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; }
+        #ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 280px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        h1 { font-size: 18px; margin: 0 0 15px 0; color: #4facfe; text-transform: uppercase; letter-spacing: 1px; }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; margin-bottom: 5px; color: #aaa; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        button:hover { transform: scale(1.02); }
+        button:active { transform: scale(0.98); }
+        .stats { font-size: 11px; color: #666; margin-top: 10px; border-top: 1px solid #333; padding-top: 10px; }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4facfe; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        .perf-note { color: #00f2fe; font-size: 10px; margin-top: 5px; font-style: italic; }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+<div id="ui-panel">
+    <h1>City Architect <span style="font-size: 0.6em; color: #777;">Fixed</span></h1>
+    
+    <div class="control-group">
+        <label>Town Density</label>
+        <input type="range" id="density" min="1" max="10" value="5">
+    </div>
+
+    <div class="control-group">
+        <div class="toggle-row">
+            <label style="margin:0">Show Roofs</label>
+            <label class="switch">
+                <input type="checkbox" id="toggleRoofs" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <div class="toggle-row">
+            <label style="margin:0">X-Ray Walls</label>
+            <label class="switch">
+                <input type="checkbox" id="toggleWalls">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <button id="generateBtn">GENERATE NEW TOWN</button>
+    
+    <div class="stats" id="stats">
+        Status: Ready<br>
+        Visuals: Windows & Lights
+    </div>
+    <div class="perf-note">High Perf Instancing</div>
+</div>
+
+<div id="canvas-container"></div>
+
+<script>
+/**
+ * HIGH PERFORMANCE PROCEDURAL ENGINE
+ * Features:
+ * 1. Instanced Rendering (60FPS)
+ * 2. Hollow Walls (No Z-Fighting)
+ * 3. Fixed Roof Geometry
+ * 4. Procedural Windows & Lights
+ */
+
+// --- CONFIGURATION ---
+const CONFIG = {
+    mapSize: 500,
+    roadWidth: 8,
+    sidewalkWidth: 2, 
+    colors: {
+        road: 0x181818,
+        sidewalk: 0x444444,
+        buildingWall: 0xe0e0e0,
+        buildingRoof: 0x3a4a5a,
+        roomFloor: [0xE8D5B5, 0xD4C4A8, 0xC0B093, 0xDDBB99], 
+        treeTrunk: 0x5C4033,
+        treeLeaf: 0x2E8B57,
+        bench: 0x8B4513,
+        lampPost: 0x111111,
+        lampLight: 0xFFFFAA,
+        // Window colors (Warm, Cool, Dark)
+        windows: [0xffeebb, 0xccffff, 0x111111, 0x111111, 0x111111]
+    }
+};
+
+// --- DATA STRUCTURES (LOGIC LAYER) ---
+
+class Rect {
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y; // Z in 3D
+        this.w = w;
+        this.h = h;
+    }
+
+    split(horizontal, minSize = 10, gap = 0) {
+        if (horizontal) {
+            if (this.h < minSize * 2 + gap) return null;
+            const splitPoint = randomRange(minSize, this.h - minSize - gap);
+            return [
+                new Rect(this.x, this.y, this.w, splitPoint),
+                new Rect(this.x, this.y + splitPoint + gap, this.w, this.h - splitPoint - gap)
+            ];
+        } else {
+            if (this.w < minSize * 2 + gap) return null;
+            const splitPoint = randomRange(minSize, this.w - minSize - gap);
+            return [
+                new Rect(this.x, this.y, splitPoint, this.h),
+                new Rect(this.x + splitPoint + gap, this.y, this.w - splitPoint - gap, this.h)
+            ];
+        }
+    }
+}
+
+class Room {
+    constructor(rect, type) {
+        this.rect = rect;
+        this.type = type;
+        this.colorIdx = Math.floor(Math.random() * CONFIG.colors.roomFloor.length);
+    }
+}
+
+class Building {
+    constructor(rect) {
+        this.rect = rect;
+        this.floors = [];
+        this.generate();
+    }
+
+    generate() {
+        const area = this.rect.w * this.rect.h;
+        if (area > 1200) {
+            this.type = 'complex';
+            this.height = randomRange(40, 90);
+            this.floorCount = Math.floor(this.height / 4);
+            this.roofType = 'flat';
+        } else if (area > 400) {
+            this.type = 'commercial';
+            this.height = randomRange(15, 30);
+            this.floorCount = Math.floor(this.height / 3.5);
+            this.roofType = Math.random() > 0.5 ? 'pitched' : 'flat';
+        } else {
+            this.type = 'residential';
+            this.height = randomRange(5, 9);
+            this.floorCount = Math.random() > 0.8 ? 2 : 1;
+            this.roofType = 'pitched';
+        }
+
+        // Generate Interiors
+        for (let i = 0; i < this.floorCount; i++) {
+            this.floors.push(this.generateFloorPlan(this.rect));
+        }
+    }
+
+    generateFloorPlan(boundary) {
+        let rooms = [];
+        let stack = [new Rect(boundary.x, boundary.y, boundary.w, boundary.h)];
+        const inset = 0.5;
+        let iterations = 0;
+
+        while (stack.length > 0 && iterations < 50) {
+            iterations++;
+            let current = stack.shift();
+            let splitHorz = current.h > current.w * 1.5 || (current.w <= current.h * 1.5 && Math.random() > 0.5);
+            
+            const minRoomSize = 6; 
+            let children = current.split(splitHorz, minRoomSize, 0.4); 
+
+            if (children && Math.random() > 0.05) { 
+                stack.push(children[0], children[1]);
+            } else {
+                const roomRect = new Rect(current.x + inset, current.y + inset, current.w - inset*2, current.h - inset*2);
+                rooms.push(new Room(roomRect, 'generic'));
+            }
+        }
+        return rooms;
+    }
+}
+
+class City {
+    constructor(size, density) {
+        this.size = size;
+        this.density = density;
+        this.buildings = [];
+        this.blocks = [];
+        this.parks = [];
+        this.generateLayout();
+    }
+
+    generateLayout() {
+        let blocks = [new Rect(-this.size/2, -this.size/2, this.size, this.size)];
+        let finalBlocks = [];
+        let loops = 0;
+
+        while (blocks.length > 0 && loops < 1500) {
+            loops++;
+            let block = blocks.shift();
+            let splitLimit = Math.max(30, 110 - (this.density * 9)); 
+            
+            if (block.w > splitLimit || block.h > splitLimit) {
+                let horizontal = block.h > block.w * 2 || (block.w <= block.h * 2 && Math.random() > 0.5);
+                let subBlocks = block.split(horizontal, splitLimit / 2, CONFIG.roadWidth);
+                if (subBlocks) blocks.push(...subBlocks);
+                else finalBlocks.push(block);
+            } else {
+                finalBlocks.push(block);
+            }
+        }
+        this.blocks = finalBlocks;
+
+        finalBlocks.forEach(block => {
+            const buildable = new Rect(
+                block.x + CONFIG.sidewalkWidth, 
+                block.y + CONFIG.sidewalkWidth, 
+                block.w - CONFIG.sidewalkWidth*2, 
+                block.h - CONFIG.sidewalkWidth*2
+            );
+            this.subdivideBlock(buildable);
+        });
+    }
+
+    subdivideBlock(rect) {
+        let plots = [rect];
+        let finalPlots = [];
+        let loops = 0;
+        
+        while (plots.length > 0 && loops < 200) {
+            loops++;
+            let plot = plots.shift();
+            const maxPlotSize = Math.max(18, 70 - (this.density * 5)); 
+
+            if (plot.w > maxPlotSize || plot.h > maxPlotSize) {
+                let horizontal = plot.h > plot.w * 1.5 || (plot.w <= plot.h * 1.5 && Math.random() > 0.5);
+                let subPlots = plot.split(horizontal, 12, 1); 
+                if (subPlots) plots.push(...subPlots);
+                else finalPlots.push(plot);
+            } else {
+                finalPlots.push(plot);
+            }
+        }
+
+        finalPlots.forEach(plotRect => {
+            if (Math.random() > 0.15 && plotRect.w > 4 && plotRect.h > 4) {
+                const margin = 0.5;
+                const houseRect = new Rect(plotRect.x + margin, plotRect.y + margin, plotRect.w - margin*2, plotRect.h - margin*2);
+                this.buildings.push(new Building(houseRect));
+            } else {
+                this.parks.push(plotRect);
+            }
+        });
+    }
+}
+
+// --- UTILS ---
+function randomRange(min, max) { return Math.random() * (max - min) + min; }
+
+// --- THREE.JS SETUP ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050505);
+scene.fog = new THREE.FogExp2(0x050505, 0.002);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1500);
+camera.position.set(150, 150, 150);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; 
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxPolarAngle = Math.PI / 2 - 0.05;
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0x404040, 0.5); 
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xaaccff, 0.7);
+dirLight.position.set(200, 300, 100);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 1024; 
+dirLight.shadow.mapSize.height = 1024;
+dirLight.shadow.camera.near = 10;
+dirLight.shadow.camera.far = 800;
+dirLight.shadow.camera.left = -300;
+dirLight.shadow.camera.right = 300;
+dirLight.shadow.camera.top = 300;
+dirLight.shadow.camera.bottom = -300;
+scene.add(dirLight);
+
+// --- INSTANCED RENDERING SYSTEM ---
+const roofPyramidGeo = new THREE.ConeGeometry(0.7071, 1, 4); 
+roofPyramidGeo.rotateY(Math.PI / 4); 
+roofPyramidGeo.computeVertexNormals();
+
+const baseGeom = {
+    box: new THREE.BoxGeometry(1, 1, 1),
+    roof: roofPyramidGeo, 
+    cylinder: new THREE.CylinderGeometry(0.5, 0.5, 1, 5),
+    sphere: new THREE.IcosahedronGeometry(0.5, 1)
+};
+Object.values(baseGeom).forEach(g => { if(g !== roofPyramidGeo) g.computeVertexNormals(); });
+
+const materials = {
+    ground: new THREE.MeshStandardMaterial({ color: CONFIG.colors.road, roughness: 0.9 }),
+    sidewalk: new THREE.MeshStandardMaterial({ color: CONFIG.colors.sidewalk, roughness: 1 }),
+    wall: new THREE.MeshStandardMaterial({ color: CONFIG.colors.buildingWall, roughness: 0.5 }),
+    wallTrans: new THREE.MeshStandardMaterial({ color: CONFIG.colors.buildingWall, roughness: 0.5, opacity: 0.15, transparent: true, depthWrite: false }),
+    roof: new THREE.MeshStandardMaterial({ color: CONFIG.colors.buildingRoof, roughness: 0.6 }),
+    treeTrunk: new THREE.MeshStandardMaterial({ color: CONFIG.colors.treeTrunk, roughness: 1 }),
+    treeLeaf: new THREE.MeshStandardMaterial({ color: CONFIG.colors.treeLeaf, roughness: 1 }),
+    bench: new THREE.MeshStandardMaterial({ color: CONFIG.colors.bench }),
+    lampPost: new THREE.MeshStandardMaterial({ color: CONFIG.colors.lampPost, roughness: 0.3 }),
+    lampLight: new THREE.MeshBasicMaterial({ color: CONFIG.colors.lampLight }),
+    roomFloors: new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 }),
+    // Use BasicMaterial for windows so they glow (emissive style) cheaply
+    windowGlass: new THREE.MeshBasicMaterial({ color: 0xffffff }) 
+};
+
+let cityGroup = new THREE.Group();
+scene.add(cityGroup);
+
+const dummy = new THREE.Object3D();
+const colorHelper = new THREE.Color();
+
+// Main Build Function
+function buildCityMesh(city) {
+    while(cityGroup.children.length > 0){ 
+        const obj = cityGroup.children[0];
+        if (obj.geometry) obj.geometry.dispose();
+        cityGroup.remove(obj); 
+    }
+
+    const matrices = {
+        sidewalks: [],
+        walls: [],
+        roofsFlat: [],
+        roofsPitched: [],
+        floors: [],
+        windows: [], // { m: matrix, c: color }
+        treeTrunks: [],
+        treeLeaves: [],
+        lampPoles: [],
+        lampHeads: [],
+        lampBulbs: [],
+        benches: []
+    };
+
+    let totalRooms = 0;
+
+    // --- Ground ---
+    const groundGeo = new THREE.PlaneGeometry(city.size + 200, city.size + 200);
+    const groundMesh = new THREE.Mesh(groundGeo, materials.ground);
+    groundMesh.rotation.x = -Math.PI / 2;
+    groundMesh.receiveShadow = true;
+    cityGroup.add(groundMesh);
+
+    // --- Sidewalks & Props ---
+    city.blocks.forEach(block => {
+        dummy.position.set(block.x + block.w/2, 0.1, block.y + block.h/2);
+        dummy.scale.set(block.w, 0.2, block.h);
+        dummy.rotation.set(0,0,0);
+        dummy.updateMatrix();
+        matrices.sidewalks.push(dummy.matrix.clone());
+
+        const step = 25;
+        const addLamp = (x, z, r) => {
+            dummy.position.set(x, 4, z);
+            dummy.scale.set(0.2, 8, 0.2);
+            dummy.rotation.set(0, r, 0);
+            dummy.updateMatrix();
+            matrices.lampPoles.push(dummy.matrix.clone());
+            
+            dummy.position.set(x + Math.sin(r)*0.5, 7.8, z + Math.cos(r)*0.5);
+            dummy.scale.set(1.5, 0.2, 0.5);
+            dummy.rotation.set(0, r + Math.PI/2, 0); 
+            dummy.translateY(0);
+            dummy.translateX(0.5); 
+            dummy.updateMatrix();
+            matrices.lampHeads.push(dummy.matrix.clone());
+            
+            dummy.scale.set(0.3, 0.1, 0.3);
+            dummy.translateX(0.3);
+            dummy.translateY(-0.1); 
+            dummy.updateMatrix();
+            matrices.lampBulbs.push(dummy.matrix.clone());
+        };
+
+        for(let x = 0; x < block.w; x+=step) addLamp(block.x + x, block.y + 0.5, 0); 
+        for(let x = 0; x < block.w; x+=step) addLamp(block.x + x, block.y + block.h - 0.5, Math.PI); 
+        for(let y = 0; y < block.h; y+=step) addLamp(block.x + 0.5, block.y + y, -Math.PI/2); 
+        for(let y = 0; y < block.h; y+=step) addLamp(block.x + block.w - 0.5, block.y + y, Math.PI/2); 
+    });
+
+    // --- Buildings ---
+    city.buildings.forEach(bldg => {
+        const wallH = bldg.height;
+        const cx = bldg.rect.x + bldg.rect.w/2;
+        const cy = bldg.rect.y + bldg.rect.h/2;
+        const thick = 0.5;
+
+        // WALLS (Hollow)
+        dummy.rotation.set(0,0,0);
+        dummy.scale.set(bldg.rect.w, wallH, thick);
+        dummy.position.set(cx, wallH/2 + 0.2, bldg.rect.y + thick/2);
+        dummy.updateMatrix();
+        matrices.walls.push(dummy.matrix.clone());
+
+        dummy.scale.set(bldg.rect.w, wallH, thick);
+        dummy.position.set(cx, wallH/2 + 0.2, bldg.rect.y + bldg.rect.h - thick/2);
+        dummy.updateMatrix();
+        matrices.walls.push(dummy.matrix.clone());
+
+        dummy.scale.set(thick, wallH, bldg.rect.h - thick*2); 
+        dummy.position.set(bldg.rect.x + thick/2, wallH/2 + 0.2, cy);
+        dummy.updateMatrix();
+        matrices.walls.push(dummy.matrix.clone());
+
+        dummy.scale.set(thick, wallH, bldg.rect.h - thick*2);
+        dummy.position.set(bldg.rect.x + bldg.rect.w - thick/2, wallH/2 + 0.2, cy);
+        dummy.updateMatrix();
+        matrices.walls.push(dummy.matrix.clone());
+
+
+        // ROOFS
+        if (bldg.roofType === 'pitched') {
+            const roofH = Math.min(bldg.rect.w, bldg.rect.h) * 0.5;
+            const overhang = 0.6;
+            
+            dummy.position.set(cx, wallH + roofH/2 + 0.2, cy);
+            dummy.scale.set(bldg.rect.w + overhang, roofH, bldg.rect.h + overhang);
+            dummy.rotation.set(0, 0, 0); 
+            dummy.updateMatrix();
+            matrices.roofsPitched.push(dummy.matrix.clone());
+        } else {
+            dummy.position.set(cx, wallH + 0.2, cy);
+            dummy.scale.set(bldg.rect.w + 0.5, 0.5, bldg.rect.h + 0.5);
+            dummy.rotation.set(0,0,0);
+            dummy.updateMatrix();
+            matrices.roofsFlat.push(dummy.matrix.clone());
+        }
+
+        // ROOMS & WINDOWS
+        const floorH = 3.5;
+        const winW = 1.0;
+        const winH = 1.5;
+        const winSpace = 2.5;
+
+        bldg.floors.forEach((floorRooms, fIdx) => {
+            const y = fIdx * floorH + 0.3;
+            // Place floor
+            floorRooms.forEach(room => {
+                totalRooms++;
+                dummy.rotation.set(0,0,0);
+                dummy.position.set(room.rect.x + room.rect.w/2, y, room.rect.y + room.rect.h/2);
+                dummy.scale.set(room.rect.w, 0.2, room.rect.h);
+                dummy.updateMatrix();
+                
+                const cHex = CONFIG.colors.roomFloor[room.colorIdx];
+                matrices.floors.push({ m: dummy.matrix.clone(), c: cHex });
+            });
+
+            // Calculate Windows for this floor
+            const winY = fIdx * floorH + 2.0; // Window center height relative to ground
+            
+            // Helper to add window
+            const addWindow = (px, py, pz, ry) => {
+                dummy.position.set(px, py, pz);
+                dummy.rotation.set(0, ry, 0);
+                dummy.scale.set(winW, winH, 0.1); // Thin box
+                dummy.translateZ(0.25); // Push out slightly from wall center (wall is 0.5 thick)
+                dummy.updateMatrix();
+                
+                // Random light color
+                const color = CONFIG.colors.windows[Math.floor(Math.random() * CONFIG.colors.windows.length)];
+                matrices.windows.push({ m: dummy.matrix.clone(), c: color });
+            };
+
+            // North/South Walls (Width)
+            const countX = Math.floor(bldg.rect.w / winSpace);
+            const marginX = (bldg.rect.w - (countX * winSpace)) / 2;
+            for(let i=0; i<countX; i++) {
+                const wx = bldg.rect.x + marginX + i * winSpace + winSpace/2;
+                addWindow(wx, winY, bldg.rect.y, 0); // North (Back)
+                addWindow(wx, winY, bldg.rect.y + bldg.rect.h, Math.PI); // South (Front)
+            }
+
+            // East/West Walls (Depth)
+            const countZ = Math.floor(bldg.rect.h / winSpace);
+            const marginZ = (bldg.rect.h - (countZ * winSpace)) / 2;
+            for(let i=0; i<countZ; i++) {
+                const wz = bldg.rect.y + marginZ + i * winSpace + winSpace/2;
+                addWindow(bldg.rect.x, winY, wz, -Math.PI/2); // West (Left)
+                addWindow(bldg.rect.x + bldg.rect.w, winY, wz, Math.PI/2); // East (Right)
+            }
+        });
+    });
+
+    // --- Parks ---
+    city.parks.forEach(park => {
+        const trees = Math.floor((park.w * park.h) / 90);
+        for(let i=0; i<trees; i++) {
+            const tx = park.x + Math.random()*park.w;
+            const ty = park.y + Math.random()*park.h;
+            const scale = 0.8 + Math.random()*0.5;
+            
+            dummy.position.set(tx, 1, ty);
+            dummy.scale.set(0.3 * scale, 2 * scale, 0.3 * scale);
+            dummy.rotation.set(0, Math.random()*Math.PI, 0);
+            dummy.updateMatrix();
+            matrices.treeTrunks.push(dummy.matrix.clone());
+
+            dummy.position.set(tx, 3.5 * scale, ty);
+            dummy.scale.set(2 * scale, 5 * scale, 2 * scale);
+            dummy.updateMatrix();
+            matrices.treeLeaves.push(dummy.matrix.clone());
+        }
+        
+        if (park.w > 5) {
+            dummy.position.set(park.x + park.w/2, 0.6, park.y + park.h/2);
+            dummy.scale.set(3, 0.2, 1);
+            dummy.rotation.set(0, Math.random()*Math.PI, 0);
+            dummy.updateMatrix();
+            matrices.benches.push(dummy.matrix.clone());
+        }
+    });
+
+    // 4. Instantiation
+    const createInstanced = (arr, geo, mat, name) => {
+        if (arr.length === 0) return;
+        const mesh = new THREE.InstancedMesh(geo, mat, arr.length);
+        mesh.userData = { type: name };
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        
+        for (let i = 0; i < arr.length; i++) {
+            mesh.setMatrixAt(i, arr[i]);
+        }
+        mesh.instanceMatrix.needsUpdate = true;
+        cityGroup.add(mesh);
+        return mesh;
+    };
+
+    createInstanced(matrices.sidewalks, baseGeom.box, materials.sidewalk, 'sidewalk');
+    createInstanced(matrices.walls, baseGeom.box, materials.wall, 'wall');
+    createInstanced(matrices.roofsFlat, baseGeom.box, materials.roof, 'roof');
+    createInstanced(matrices.roofsPitched, baseGeom.roof, materials.roof, 'roof');
+    
+    // Colored Floors
+    if (matrices.floors.length > 0) {
+        const floorMesh = new THREE.InstancedMesh(baseGeom.box, materials.roomFloors, matrices.floors.length);
+        for (let i = 0; i < matrices.floors.length; i++) {
+            floorMesh.setMatrixAt(i, matrices.floors[i].m);
+            colorHelper.setHex(matrices.floors[i].c);
+            floorMesh.setColorAt(i, colorHelper);
+        }
+        floorMesh.instanceMatrix.needsUpdate = true;
+        floorMesh.instanceColor.needsUpdate = true;
+        cityGroup.add(floorMesh);
+    }
+
+    // Colored/Lit Windows
+    if (matrices.windows.length > 0) {
+        const winMesh = new THREE.InstancedMesh(baseGeom.box, materials.windowGlass, matrices.windows.length);
+        // Windows don't cast shadow, they emit light (visually)
+        winMesh.castShadow = false;
+        winMesh.receiveShadow = false;
+
+        for (let i = 0; i < matrices.windows.length; i++) {
+            winMesh.setMatrixAt(i, matrices.windows[i].m);
+            colorHelper.setHex(matrices.windows[i].c);
+            winMesh.setColorAt(i, colorHelper);
+        }
+        winMesh.instanceMatrix.needsUpdate = true;
+        winMesh.instanceColor.needsUpdate = true;
+        cityGroup.add(winMesh);
+    }
+
+    createInstanced(matrices.treeTrunks, baseGeom.cylinder, materials.treeTrunk, 'prop');
+    createInstanced(matrices.treeLeaves, baseGeom.roof, materials.treeLeaf, 'prop'); 
+    createInstanced(matrices.lampPoles, baseGeom.cylinder, materials.lampPost, 'prop');
+    createInstanced(matrices.lampHeads, baseGeom.box, materials.lampPost, 'prop');
+    
+    const bulbs = createInstanced(matrices.lampBulbs, baseGeom.box, materials.lampLight, 'prop');
+    if(bulbs) { bulbs.castShadow = false; bulbs.receiveShadow = false; }
+
+    createInstanced(matrices.benches, baseGeom.box, materials.bench, 'prop');
+
+    const totalObjs = matrices.walls.length + matrices.floors.length + matrices.treeTrunks.length;
+    document.getElementById('stats').innerHTML = `Buildings: ${city.buildings.length}<br>Rooms: ${totalRooms}<br>Objects: ${totalObjs}<br>Draw Calls: ~15`;
+    
+    updateVisibility();
+}
+
+// --- MAIN LOOP ---
+
+let currentCity;
+
+function generateWorld() {
+    const density = document.getElementById('density').value;
+    currentCity = new City(CONFIG.mapSize, parseInt(density));
+    buildCityMesh(currentCity);
+}
+
+document.getElementById('generateBtn').addEventListener('click', generateWorld);
+document.getElementById('density').addEventListener('input', generateWorld);
+document.getElementById('toggleRoofs').addEventListener('change', updateVisibility);
+document.getElementById('toggleWalls').addEventListener('change', updateVisibility);
+
+function updateVisibility() {
+    const showRoofs = document.getElementById('toggleRoofs').checked;
+    const xrayWalls = document.getElementById('toggleWalls').checked;
+
+    cityGroup.children.forEach(child => {
+        if (child.userData.type === 'roof') {
+            child.visible = showRoofs;
+        }
+        if (child.userData.type === 'wall') {
+            child.material = xrayWalls ? materials.wallTrans : materials.wall;
+        }
+    });
+}
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+generateWorld();
+animate();
+
+</script>
+</body>
+</html>

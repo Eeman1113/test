@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procedural City & Architecture Generator</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1a1a1a; }
+        #canvas-container { width: 100vw; height: 100vh; display: block; }
+        #ui-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 280px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        h1 { font-size: 18px; margin: 0 0 15px 0; color: #4facfe; text-transform: uppercase; letter-spacing: 1px; }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; margin-bottom: 5px; color: #aaa; }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        button:hover { transform: scale(1.02); }
+        button:active { transform: scale(0.98); }
+        .stats { font-size: 11px; color: #666; margin-top: 10px; border-top: 1px solid #333; padding-top: 10px; }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4facfe; }
+        input:checked + .slider:before { transform: translateX(20px); }
+    </style>
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+<div id="ui-panel">
+    <h1>City Architect</h1>
+    
+    <div class="control-group">
+        <label>Town Density</label>
+        <input type="range" id="density" min="1" max="10" value="4">
+    </div>
+
+    <div class="control-group">
+        <div class="toggle-row">
+            <label style="margin:0">Show Roofs</label>
+            <label class="switch">
+                <input type="checkbox" id="toggleRoofs" checked>
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <div class="toggle-row">
+            <label style="margin:0">X-Ray Walls</label>
+            <label class="switch">
+                <input type="checkbox" id="toggleWalls">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <button id="generateBtn">GENERATE NEW TOWN</button>
+    
+    <div class="stats" id="stats">
+        Buildings: 0<br>
+        Rooms: 0
+    </div>
+</div>
+
+<div id="canvas-container"></div>
+
+<script>
+/**
+ * PROCEDURAL GENERATION ENGINE
+ * * Architecture Layers:
+ * 1. Town Layout (BSP Tree)
+ * 2. Plot Allocation
+ * 3. Building Extrusion
+ * 4. Interior Room Partitioning
+ * 5. Props (Trees, Lights, Benches)
+ */
+
+// --- CONFIGURATION ---
+const CONFIG = {
+    mapSize: 400,
+    minBlockSize: 40,
+    roadWidth: 6, // Wider for streetlights
+    sidewalkWidth: 2, 
+    colors: {
+        road: 0x181818, // Dark Asphalt
+        sidewalk: 0x444444, // Concrete
+        grass: 0x2d3a2d,
+        buildingWall: 0xe0e0e0,
+        buildingRoof: 0x3a4a5a,
+        roomFloor: [0xE8D5B5, 0xD4C4A8, 0xC0B093, 0xE0E0E0], 
+        roomWall: 0xffffff,
+        treeTrunk: 0x5C4033,
+        treeLeaf: 0x2E8B57,
+        bench: 0x8B4513,
+        lampPost: 0x111111,
+        lampLight: 0xFFFFAA
+    }
+};
+
+// --- DATA STRUCTURES ---
+
+class Rect {
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y; // Z in 3D space
+        this.w = w;
+        this.h = h;
+    }
+
+    // Split this rectangle into two smaller ones
+    split(horizontal, minSize = 10, gap = 0) {
+        if (horizontal) {
+            if (this.h < minSize * 2 + gap) return null;
+            const splitPoint = randomRange(minSize, this.h - minSize - gap);
+            const r1 = new Rect(this.x, this.y, this.w, splitPoint);
+            const r2 = new Rect(this.x, this.y + splitPoint + gap, this.w, this.h - splitPoint - gap);
+            return [r1, r2];
+        } else {
+            if (this.w < minSize * 2 + gap) return null;
+            const splitPoint = randomRange(minSize, this.w - minSize - gap);
+            const r1 = new Rect(this.x, this.y, splitPoint, this.h);
+            const r2 = new Rect(this.x + splitPoint + gap, this.y, this.w - splitPoint - gap, this.h);
+            return [r1, r2];
+        }
+    }
+}
+
+class Room {
+    constructor(rect, type) {
+        this.rect = rect;
+        this.type = type; // 'living', 'bed', 'kitchen', 'bath', 'hall'
+        this.color = CONFIG.colors.roomFloor[Math.floor(Math.random() * CONFIG.colors.roomFloor.length)];
+    }
+}
+
+class Building {
+    constructor(rect) {
+        this.rect = rect;
+        this.height = 0;
+        this.floors = [];
+        this.roofType = 'flat';
+        this.generate();
+    }
+
+    generate() {
+        const area = this.rect.w * this.rect.h;
+
+        // Determine building type based on area
+        if (area > 1200) {
+            this.type = 'complex';
+            this.height = randomRange(40, 80);
+            this.floorCount = Math.floor(this.height / 4);
+        } else if (area > 400) {
+            this.type = 'commercial';
+            this.height = randomRange(12, 25);
+            this.floorCount = Math.floor(this.height / 3.5);
+            this.roofType = Math.random() > 0.5 ? 'pitched' : 'flat';
+        } else {
+            this.type = 'residential';
+            this.height = randomRange(4, 8);
+            this.floorCount = Math.random() > 0.8 ? 2 : 1;
+            this.roofType = 'pitched';
+        }
+
+        // Generate Interiors for each floor
+        for (let i = 0; i < this.floorCount; i++) {
+            const floorRooms = this.generateFloorPlan(this.rect);
+            this.floors.push(floorRooms);
+        }
+    }
+
+    generateFloorPlan(boundary) {
+        let rooms = [];
+        let stack = [new Rect(boundary.x, boundary.y, boundary.w, boundary.h)];
+        const inset = 0.5;
+        let iterations = 0;
+
+        while (stack.length > 0 && iterations < 50) {
+            iterations++;
+            let current = stack.shift();
+            
+            let splitHorz = Math.random() > 0.5;
+            if (current.w > current.h * 1.5) splitHorz = false;
+            else if (current.h > current.w * 1.5) splitHorz = true;
+
+            const minRoomSize = 5; 
+            let children = current.split(splitHorz, minRoomSize, 0.5); 
+
+            if (children && Math.random() > 0.05) { 
+                stack.push(children[0]);
+                stack.push(children[1]);
+            } else {
+                const roomType = this.assignRoomType(current.w * current.h);
+                const roomRect = new Rect(current.x + inset, current.y + inset, current.w - inset*2, current.h - inset*2);
+                rooms.push(new Room(roomRect, roomType));
+            }
+        }
+        return rooms;
+    }
+
+    assignRoomType(area) {
+        if (area < 15) return 'bath';
+        if (area < 30) return 'bed';
+        if (area > 80) return 'living';
+        return 'kitchen'; 
+    }
+}
+
+class City {
+    constructor(size, density) {
+        this.size = size;
+        this.density = density;
+        this.buildings = [];
+        this.blocks = []; // The sidewalk/base blocks
+        this.parks = []; // Empty plots for trees
+        
+        this.generateLayout();
+    }
+
+    generateLayout() {
+        let blocks = [new Rect(-this.size/2, -this.size/2, this.size, this.size)];
+        let finalBlocks = [];
+
+        // 1. Generate Blocks (Road Network)
+        let loops = 0;
+        while (blocks.length > 0 && loops < 1000) {
+            loops++;
+            let block = blocks.shift();
+            let splitLimit = Math.max(30, 100 - (this.density * 8)); 
+            
+            if (block.w > splitLimit || block.h > splitLimit) {
+                let horizontal = Math.random() > 0.5;
+                if(block.w > block.h * 2) horizontal = false;
+                if(block.h > block.w * 2) horizontal = true;
+
+                let subBlocks = block.split(horizontal, splitLimit / 2, CONFIG.roadWidth);
+                if (subBlocks) {
+                    blocks.push(subBlocks[0]);
+                    blocks.push(subBlocks[1]);
+                } else {
+                    finalBlocks.push(block);
+                }
+            } else {
+                finalBlocks.push(block);
+            }
+        }
+
+        this.blocks = finalBlocks;
+
+        // 2. Subdivide Blocks into Plots
+        finalBlocks.forEach(block => {
+            // Shrink block to create sidewalk area for props
+            const buildableArea = new Rect(
+                block.x + CONFIG.sidewalkWidth, 
+                block.y + CONFIG.sidewalkWidth, 
+                block.w - CONFIG.sidewalkWidth*2, 
+                block.h - CONFIG.sidewalkWidth*2
+            );
+            
+            this.subdivideBlock(buildableArea);
+        });
+    }
+
+    subdivideBlock(rect) {
+        let plots = [rect];
+        let finalPlots = [];
+        let loops = 0;
+
+        while (plots.length > 0 && loops < 500) {
+            loops++;
+            let plot = plots.shift();
+            const maxPlotSize = Math.max(15, 60 - (this.density * 5)); 
+
+            if (plot.w > maxPlotSize || plot.h > maxPlotSize) {
+                let horizontal = Math.random() > 0.5;
+                if(plot.w > plot.h * 1.5) horizontal = false;
+                if(plot.h > plot.w * 1.5) horizontal = true;
+
+                let subPlots = plot.split(horizontal, 10, 0.5); 
+                if (subPlots) {
+                    plots.push(subPlots[0]);
+                    plots.push(subPlots[1]);
+                } else {
+                    finalPlots.push(plot);
+                }
+            } else {
+                finalPlots.push(plot);
+            }
+        }
+
+        // 3. Create Buildings OR Parks
+        finalPlots.forEach(plotRect => {
+            // 85% chance for building, 15% park
+            if (Math.random() > 0.15) {
+                const margin = 1;
+                if (plotRect.w > margin*3 && plotRect.h > margin*3) {
+                    const houseRect = new Rect(plotRect.x + margin, plotRect.y + margin, plotRect.w - margin*2, plotRect.h - margin*2);
+                    this.buildings.push(new Building(houseRect));
+                }
+            } else {
+                // It's a park
+                this.parks.push(plotRect);
+            }
+        });
+    }
+}
+
+// --- UTILS ---
+function randomRange(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+// --- THREE.JS RENDERER ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0a); // Darker night sky
+scene.fog = new THREE.FogExp2(0x0a0a0a, 0.003);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(100, 100, 100);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxPolarAngle = Math.PI / 2 - 0.05; 
+
+// Lighting - Night Mode ish
+const ambientLight = new THREE.AmbientLight(0x404040, 0.4); 
+scene.add(ambientLight);
+
+// Moon/Street light
+const dirLight = new THREE.DirectionalLight(0xaaccff, 0.5);
+dirLight.position.set(100, 200, 50);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.near = 0.5;
+dirLight.shadow.camera.far = 500;
+dirLight.shadow.camera.left = -200;
+dirLight.shadow.camera.right = 200;
+dirLight.shadow.camera.top = 200;
+dirLight.shadow.camera.bottom = -200;
+scene.add(dirLight);
+
+let cityGroup = new THREE.Group();
+scene.add(cityGroup);
+
+// Geometries & Materials
+const materials = {
+    ground: new THREE.MeshStandardMaterial({ color: CONFIG.colors.road, roughness: 0.9 }),
+    sidewalk: new THREE.MeshStandardMaterial({ color: CONFIG.colors.sidewalk, roughness: 1 }),
+    wall: new THREE.MeshStandardMaterial({ color: CONFIG.colors.buildingWall, roughness: 0.5 }),
+    wallTransparent: new THREE.MeshStandardMaterial({ color: CONFIG.colors.buildingWall, roughness: 0.5, opacity: 0.2, transparent: true, depthWrite: false }),
+    roof: new THREE.MeshStandardMaterial({ color: CONFIG.colors.buildingRoof, roughness: 0.6 }),
+    treeTrunk: new THREE.MeshStandardMaterial({ color: CONFIG.colors.treeTrunk, roughness: 1 }),
+    treeLeaf: new THREE.MeshStandardMaterial({ color: CONFIG.colors.treeLeaf, roughness: 1 }),
+    bench: new THREE.MeshStandardMaterial({ color: CONFIG.colors.bench, roughness: 0.8 }),
+    lampPost: new THREE.MeshStandardMaterial({ color: CONFIG.colors.lampPost, roughness: 0.4 }),
+    lampLight: new THREE.MeshBasicMaterial({ color: CONFIG.colors.lampLight })
+};
+
+// Reusable Geometries
+const trunkGeo = new THREE.CylinderGeometry(0.3, 0.4, 2, 5);
+trunkGeo.translate(0, 1, 0); // Pivot at bottom
+const foliageGeo = new THREE.ConeGeometry(2, 5, 6);
+foliageGeo.translate(0, 3.5, 0);
+
+const lampPoleGeo = new THREE.CylinderGeometry(0.2, 0.2, 8, 6);
+lampPoleGeo.translate(0, 4, 0);
+const lampHeadGeo = new THREE.BoxGeometry(1.5, 0.3, 0.5);
+lampHeadGeo.translate(0.5, 7.8, 0);
+const lampBulbGeo = new THREE.BoxGeometry(0.3, 0.1, 0.3);
+lampBulbGeo.translate(1, 7.7, 0);
+
+const benchSeatGeo = new THREE.BoxGeometry(3, 0.2, 1);
+benchSeatGeo.translate(0, 0.6, 0);
+const benchLegGeo = new THREE.BoxGeometry(0.2, 0.6, 0.8);
+
+// --- HELPER FUNCTIONS ---
+
+function addTree(x, z, group) {
+    const tree = new THREE.Group();
+    const trunk = new THREE.Mesh(trunkGeo, materials.treeTrunk);
+    const leaves = new THREE.Mesh(foliageGeo, materials.treeLeaf);
+    
+    trunk.castShadow = true;
+    leaves.castShadow = true;
+    
+    tree.add(trunk);
+    tree.add(leaves);
+    
+    // Random rotation and scale variance
+    const scale = 0.8 + Math.random() * 0.5;
+    tree.scale.set(scale, scale, scale);
+    tree.rotation.y = Math.random() * Math.PI;
+    tree.position.set(x, 0.2, z); // On sidewalk level
+    
+    group.add(tree);
+}
+
+function addStreetLight(x, z, rotY, group) {
+    const light = new THREE.Group();
+    const pole = new THREE.Mesh(lampPoleGeo, materials.lampPost);
+    const head = new THREE.Mesh(lampHeadGeo, materials.lampPost);
+    const bulb = new THREE.Mesh(lampBulbGeo, materials.lampLight);
+    
+    light.add(pole);
+    light.add(head);
+    light.add(bulb);
+    
+    light.position.set(x, 0.2, z);
+    light.rotation.y = rotY;
+    
+    // Actual Light Source (Optimized: only some cast shadow)
+    // To save performance, we use PointLight sparingly or with short distance
+    if (Math.random() > 0.5) {
+        const pointLight = new THREE.PointLight(CONFIG.colors.lampLight, 1, 15);
+        pointLight.position.set(1, 7.5, 0);
+        light.add(pointLight);
+    }
+    
+    group.add(light);
+}
+
+function addBench(x, z, rotY, group) {
+    const bench = new THREE.Group();
+    const seat = new THREE.Mesh(benchSeatGeo, materials.bench);
+    const leg1 = new THREE.Mesh(benchLegGeo, materials.lampPost); // Metal legs
+    leg1.position.set(-1.2, 0.3, 0);
+    const leg2 = new THREE.Mesh(benchLegGeo, materials.lampPost);
+    leg2.position.set(1.2, 0.3, 0);
+    
+    bench.add(seat);
+    bench.add(leg1);
+    bench.add(leg2);
+    
+    bench.position.set(x, 0.2, z);
+    bench.rotation.y = rotY;
+    group.add(bench);
+}
+
+// --- RENDER LOGIC ---
+
+function buildCityMesh(city) {
+    // Clear previous
+    while(cityGroup.children.length > 0){ 
+        const obj = cityGroup.children[0];
+        if (obj.geometry) obj.geometry.dispose();
+        cityGroup.remove(obj); 
+    }
+
+    let statsBuildings = 0;
+    let statsRooms = 0;
+
+    // 1. Road Plane (Base)
+    const groundGeo = new THREE.PlaneGeometry(city.size + 100, city.size + 100);
+    const groundMesh = new THREE.Mesh(groundGeo, materials.ground);
+    groundMesh.rotation.x = -Math.PI / 2;
+    groundMesh.receiveShadow = true;
+    cityGroup.add(groundMesh);
+
+    // 2. Sidewalks & Street Props
+    city.blocks.forEach(block => {
+        // Sidewalk Mesh
+        const swGeo = new THREE.BoxGeometry(block.w, 0.2, block.h);
+        swGeo.translate(block.x + block.w/2, 0.1, block.y + block.h/2);
+        const swMesh = new THREE.Mesh(swGeo, materials.sidewalk);
+        swMesh.receiveShadow = true;
+        cityGroup.add(swMesh);
+
+        // Add Streetlights along edges of sidewalk
+        // We iterate perimeter
+        const step = 25; 
+        
+        // Top Edge
+        for(let x = 0; x < block.w; x+=step) addStreetLight(block.x + x, block.y + 0.5, 0, cityGroup);
+        // Bottom Edge
+        for(let x = 0; x < block.w; x+=step) addStreetLight(block.x + x, block.y + block.h - 0.5, Math.PI, cityGroup);
+        // Left Edge
+        for(let y = 0; y < block.h; y+=step) addStreetLight(block.x + 0.5, block.y + y, Math.PI/2, cityGroup);
+        // Right Edge
+        for(let y = 0; y < block.h; y+=step) addStreetLight(block.x + block.w - 0.5, block.y + y, -Math.PI/2, cityGroup);
+    });
+
+    // 3. Buildings
+    city.buildings.forEach(bldg => {
+        statsBuildings++;
+        const wallHeight = bldg.height;
+        const floorHeight = 3.5;
+
+        // EXTERIOR WALLS
+        const wallGeo = new THREE.BoxGeometry(bldg.rect.w, wallHeight, bldg.rect.h);
+        wallGeo.translate(bldg.rect.x + bldg.rect.w/2, wallHeight/2 + 0.2, bldg.rect.y + bldg.rect.h/2); // +0.2 for sidewalk
+        
+        const wallMesh = new THREE.Mesh(wallGeo, materials.wall);
+        wallMesh.castShadow = true;
+        wallMesh.receiveShadow = true;
+        wallMesh.userData = { type: 'wall' }; 
+        cityGroup.add(wallMesh);
+
+        // ROOF
+        if (bldg.roofType === 'pitched') {
+            const roofHeight = bldg.rect.w < bldg.rect.h ? bldg.rect.w / 2 : bldg.rect.h / 2;
+            const roofGeo = new THREE.ConeGeometry(Math.max(bldg.rect.w, bldg.rect.h) * 0.7, roofHeight, 4);
+            roofGeo.translate(bldg.rect.x + bldg.rect.w/2, wallHeight + roofHeight/2 + 0.2, bldg.rect.y + bldg.rect.h/2);
+            const roofMesh = new THREE.Mesh(roofGeo, materials.roof);
+            roofMesh.rotation.y = Math.PI / 4; 
+            roofMesh.userData = { type: 'roof' };
+            cityGroup.add(roofMesh);
+        } else {
+            const roofLidGeo = new THREE.BoxGeometry(bldg.rect.w + 0.5, 0.5, bldg.rect.h + 0.5);
+            roofLidGeo.translate(bldg.rect.x + bldg.rect.w/2, wallHeight + 0.2, bldg.rect.y + bldg.rect.h/2);
+            const roofMesh = new THREE.Mesh(roofLidGeo, materials.roof);
+            roofMesh.userData = { type: 'roof' };
+            cityGroup.add(roofMesh);
+        }
+
+        // INTERIOR ROOMS
+        bldg.floors.forEach((floorRooms, floorIndex) => {
+            const currentY = floorIndex * floorHeight;
+            floorRooms.forEach(room => {
+                statsRooms++;
+                const roomGeo = new THREE.BoxGeometry(room.rect.w, 0.2, room.rect.h);
+                roomGeo.translate(room.rect.x + room.rect.w/2, currentY + 0.3, room.rect.y + room.rect.h/2); // +0.3 to sit on sidewalk
+                
+                const mat = new THREE.MeshStandardMaterial({ color: room.color, roughness: 0.8 });
+                const roomMesh = new THREE.Mesh(roomGeo, mat);
+                cityGroup.add(roomMesh);
+            });
+        });
+    });
+
+    // 4. Parks
+    city.parks.forEach(park => {
+        // Scatter trees
+        const treeCount = Math.floor(park.w * park.h / 80);
+        for(let i=0; i<treeCount; i++) {
+            const tx = park.x + Math.random() * park.w;
+            const ty = park.y + Math.random() * park.h;
+            addTree(tx, ty, cityGroup);
+        }
+
+        // Add a bench in the middle
+        if (park.w > 4 && park.h > 4) {
+            addBench(park.x + park.w/2, park.y + park.h/2, Math.random() * Math.PI, cityGroup);
+        }
+    });
+
+    document.getElementById('stats').innerHTML = `Buildings: ${statsBuildings}<br>Rooms: ${statsRooms}`;
+    updateVisibility();
+}
+
+// --- MAIN LOOP & INTERACTION ---
+
+let currentCity;
+
+function generateWorld() {
+    const density = document.getElementById('density').value;
+    currentCity = new City(CONFIG.mapSize, parseInt(density));
+    buildCityMesh(currentCity);
+}
+
+// Event Listeners
+document.getElementById('generateBtn').addEventListener('click', generateWorld);
+document.getElementById('density').addEventListener('input', generateWorld);
+
+document.getElementById('toggleRoofs').addEventListener('change', updateVisibility);
+document.getElementById('toggleWalls').addEventListener('change', updateVisibility);
+
+function updateVisibility() {
+    const showRoofs = document.getElementById('toggleRoofs').checked;
+    const xrayWalls = document.getElementById('toggleWalls').checked;
+
+    cityGroup.children.forEach(child => {
+        if (child.userData.type === 'roof') {
+            child.visible = showRoofs;
+        }
+        if (child.userData.type === 'wall') {
+            child.material = xrayWalls ? materials.wallTransparent : materials.wall;
+        }
+    });
+}
+
+// Animation Loop
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+// Init
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+generateWorld();
+animate();
+
+</script>
+</body>
+</html>
